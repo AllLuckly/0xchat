@@ -1,0 +1,60 @@
+group 'com.yl.yl_login'
+version '1.0-SNAPSHOT'
+
+buildscript {
+
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.0.4'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.38.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        google()
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 31
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+    defaultConfig {
+        minSdkVersion 24
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.10"
+
+    implementation "org.java-websocket:Java-WebSocket:1.4.0"
+    implementation "com.github.komputing:khex:1.0.0-RC6"
+    implementation "androidx.appcompat:appcompat:1.0.2"
+
+    implementation "androidx.multidex:multidex:2.0.1"
+    implementation "com.squareup.moshi:moshi:1.8.0"
+    implementation "com.squareup.okhttp3:okhttp:3.11.0"
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0'
+    implementation 'com.github.WalletConnect:kotlin-walletconnect-lib:0.9.6'
+
+    implementation 'com.github.Outblock:fcl-android:0.09'
+}

@@ -28,9 +28,9 @@ class _SetSignaturePageState extends State<SetSignaturePage> {
     _controller = TextEditingController();
     mCurrentUserInfo = YLUserInfoManager.sharedInstance.currentUserInfo;
     _controller?.text = mCurrentUserInfo?.whatsUp ?? '';
-    _controller?.addListener(() {
-      print(_controller?.text);
-    });
+    // _controller?.addListener(() {
+    //   print(_controller?.text);
+    // });
   }
 
   @override
@@ -48,30 +48,36 @@ class _SetSignaturePageState extends State<SetSignaturePage> {
           title:  Localized.text('yl_usercenter.Signature'),
           useLargeTitle: false,
           centerTitle: true,
-          canBack: false,
+          canBack: true,
           actions: <Widget>[
             Container(
-              margin: EdgeInsets.only(right: Adapt.px(5), top: Adapt.px(12)),
+              margin: EdgeInsets.only(right: Adapt.px(5)),
               color: Colors.transparent,
-              child: CommonButton(
-                backgroundColor: Colors.transparent,
-                width: Adapt.px(44),
-                height: Adapt.px(44),
-                content : Localized.text('yl_usercenter.Done'),
-                onPressed: () async {
-                  bool isSuc  = await YLModuleService.invoke("yl_wowchat", "doSubmitAndSaveForWhatsUp", [_controller?.text]);
-                  if(isSuc) {
-                    mCurrentUserInfo?.whatsUp = _controller?.text;
-                    YLUserInfoManager.sharedInstance.updateUserInfo(mCurrentUserInfo!);
-                    CommonToast.instance.show(context, Localized.text("yl_usercenter.Set successfully"));
-                    YLNavigator.pop(context);
-                    setState(() {
+              child: ValueListenableBuilder(
+                valueListenable:_controller!,
+                builder: (_,__,___){
+                  return CommonButton(
+                      backgroundColor: Colors.transparent,
+                      width: Adapt.px(44),
+                      height: Adapt.px(44),
+                      content : Localized.text('yl_usercenter.Done'),
+                      fontColor: _controller!.text.isNotEmpty ? ThemeColor.white01 : ThemeColor.gray7,
+                      onPressed: _controller!.text.isNotEmpty ? () async {
+                        bool isSuc  = await YLModuleService.invoke("yl_wowchat", "doSubmitAndSaveForWhatsUp", [_controller?.text]);
+                        if(isSuc) {
+                          mCurrentUserInfo?.whatsUp = _controller?.text;
+                          YLUserInfoManager.sharedInstance.updateUserInfo(mCurrentUserInfo!);
+                          CommonToast.instance.show(context, Localized.text("yl_usercenter.Set successfully"));
+                          YLNavigator.pop(context);
+                          setState(() {
 
-                    });
-                  }else {
-                    CommonToast.instance.show(context, Localized.text("yl_usercenter.set_failed"));
-                  }
-                  // YLNavigator.pushPage(context, (context) => SetUpPage());
+                          });
+                        }else {
+                          CommonToast.instance.show(context, Localized.text("yl_usercenter.set_failed"));
+                        }
+                        // YLNavigator.pushPage(context, (context) => SetUpPage());
+                      } : (){}
+                  );
                 },
               ),
             ),

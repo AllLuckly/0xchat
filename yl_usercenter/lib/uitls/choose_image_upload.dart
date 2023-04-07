@@ -120,8 +120,6 @@ class ChooseImageUploadNetManage {
   }
 
 
-
-
     ///创建ai image nft头像
     static Future<bool?> createAiImageNftAvatar  (
       {BuildContext? context, params}) async {
@@ -131,7 +129,7 @@ class ChooseImageUploadNetManage {
         return YLNetwork.instance
           .doRequest(
             context,
-            url: '${baseUrl}file/createAiNftAvatar2',
+            url: '${baseUrl}file/createAiNftAvatar',
             showErrorToast: true,
             needCommonParams: false,
             needRSA: false,

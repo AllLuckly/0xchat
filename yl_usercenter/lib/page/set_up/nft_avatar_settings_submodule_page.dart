@@ -8,6 +8,7 @@ import 'package:yl_common/navigator/navigator.dart';
 import 'package:yl_common/utils/adapt.dart';
 import 'package:yl_common/utils/theme_color.dart';
 import 'package:yl_common/utils/yl_userinfo_manager.dart';
+import 'package:yl_common/widgets/common_status_view.dart';
 import 'package:yl_common/widgets/common_toast.dart';
 import 'package:yl_localizable/yl_localizable.dart';
 import 'package:yl_module_service/yl_module_service.dart';
@@ -51,6 +52,8 @@ class _NFTAvatarSettingsSubmodulePageState
   List<OwnedNfts> showOwnedNfts = [];
   List<OwnedNfts> showPreGodList = [];
 
+  bool isShowLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -67,6 +70,7 @@ class _NFTAvatarSettingsSubmodulePageState
     //0xC8b960D09C0078c18Dcbe7eB9AB9d816BcCa8944
     mainnetEntity = await getMyMainnetEntitys(
         account: YLUserInfoManager.sharedInstance.currentUserInfo?.token);
+    isShowLoading = false;
     if (mainnetEntity != null) {
       showOwnedNfts.addAll(mainnetEntity!.ownedNfts!);
     }
@@ -80,6 +84,7 @@ class _NFTAvatarSettingsSubmodulePageState
     //0xC8b960D09C0078c18Dcbe7eB9AB9d816BcCa8944
     mainnetEntity = await getMyEthEntitys(
         account: YLUserInfoManager.sharedInstance.currentUserInfo?.token);
+    isShowLoading = false;
     if (mainnetEntity != null) {
       showPreGodList.addAll(mainnetEntity!.ownedNfts!);
     }
@@ -97,9 +102,10 @@ class _NFTAvatarSettingsSubmodulePageState
   Widget buildBoby() {
     double xwidth = MediaQuery.of(context).size.width;
     if (pageType == NFTAvatarSettingsType.maticType) {
-      return showOwnedNfts.length == 0
+      return isShowLoading ?  _showLoading() : showOwnedNfts.length == 0
           ? Container(
               color: ThemeColor.bgColor,
+              child: CommonStatusView(pageStatus: PageStatus.noData),
             )
           : Container(
               color: ThemeColor.bgColor,
@@ -181,9 +187,10 @@ class _NFTAvatarSettingsSubmodulePageState
               ));
 
     }
-    return showPreGodList.length == 0
+    return isShowLoading ? _showLoading() : showOwnedNfts.length == 0
         ? Container(
             color: ThemeColor.bgColor,
+            child: CommonStatusView(pageStatus: PageStatus.noData),
           )
         : Container(
             color: ThemeColor.bgColor,
@@ -241,6 +248,23 @@ class _NFTAvatarSettingsSubmodulePageState
                 itemCount: showPreGodList.length,
               ),
             )
+    );
+  }
+
+  Widget _showLoading() {
+    return Container(
+      constraints: const BoxConstraints.expand(),
+      color: ThemeColor.bgColor,
+      child: Center(
+        child: SizedBox(
+          width: Adapt.px(36),
+          height: Adapt.px(36),
+          child: CircularProgressIndicator(
+            strokeWidth: 2.0,
+            valueColor: AlwaysStoppedAnimation<Color>(ThemeColor.purple1),
+          ),
+        ),
+      ),
     );
   }
 

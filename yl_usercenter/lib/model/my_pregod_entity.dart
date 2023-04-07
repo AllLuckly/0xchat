@@ -7,17 +7,18 @@ import 'package:yl_network/network_manager.dart';
 
 class MyPreGod {
   MyPreGod({
-      String? version, 
-      String? dateUpdated, 
-      String? identifier, 
-      int? total, 
-      List<PreGodList>? list,}){
+    String? version,
+    String? dateUpdated,
+    String? identifier,
+    int? total,
+    List<PreGodList>? list,
+  }) {
     _version = version;
     _dateUpdated = dateUpdated;
     _identifier = identifier;
     _total = total;
     _list = list;
-}
+  }
 
   MyPreGod.fromJson(dynamic json) {
     _version = json['version'];
@@ -31,26 +32,36 @@ class MyPreGod {
       });
     }
   }
+
   String? _version;
   String? _dateUpdated;
   String? _identifier;
   int? _total;
   List<PreGodList>? _list;
-MyPreGod copyWith({  String? version,
-  String? dateUpdated,
-  String? identifier,
-  int? total,
-  List<PreGodList>? list,
-}) => MyPreGod(  version: version ?? _version,
-  dateUpdated: dateUpdated ?? _dateUpdated,
-  identifier: identifier ?? _identifier,
-  total: total ?? _total,
-  list: list ?? _list,
-);
+
+  MyPreGod copyWith({
+    String? version,
+    String? dateUpdated,
+    String? identifier,
+    int? total,
+    List<PreGodList>? list,
+  }) =>
+      MyPreGod(
+        version: version ?? _version,
+        dateUpdated: dateUpdated ?? _dateUpdated,
+        identifier: identifier ?? _identifier,
+        total: total ?? _total,
+        list: list ?? _list,
+      );
+
   String? get version => _version;
+
   String? get dateUpdated => _dateUpdated;
+
   String? get identifier => _identifier;
+
   int? get total => _total;
+
   List<PreGodList>? get list => _list;
 
   Map<String, dynamic> toJson() {
@@ -64,7 +75,6 @@ MyPreGod copyWith({  String? version,
     }
     return map;
   }
-
 }
 
 /// 账户信息接口
@@ -73,16 +83,16 @@ Future<MyPreGod?> getMyPreGods({BuildContext? context, Map<String, dynamic>? par
   // map['X-API-KEY'] = 'a34f499e3db94c2ebaea8b1ba53fc721';
   // 'https://pregod.rss3.dev/v0.4.0/account:0xC8b960D09C0078c18Dcbe7eB9AB9d816BcCa8944@ethereum/notes?tags=NFT&exclude_tags=POAP'
   String url = 'https://pregod.rss3.dev/v0.4.0/account:${account}@ethereum/notes';
-  return YLNetwork.instance.doRequest(
-    context,
-    url: url,
-    // header: map,
-    showErrorToast: true,
-    needCommonParams: false,
-    needRSA: false,
-    type: RequestType.GET,
-    params: params
-  ).then((YLResponse response){
+  return YLNetwork.instance
+      .doRequest(context,
+          url: url,
+          // header: map,
+          showErrorToast: true,
+          needCommonParams: false,
+          needRSA: false,
+          type: RequestType.GET,
+          params: params)
+      .then((YLResponse response) {
     if (response.data is Map) {
       MyPreGod assetsEntity = MyPreGod.fromJson(Map<String, dynamic>.from(response.data));
       return assetsEntity;
@@ -110,20 +120,20 @@ Future<MyPreGod?> getMyPreGods({BuildContext? context, Map<String, dynamic>? par
 
 class PreGodList {
   PreGodList({
-      String? identifier, 
-      String? dateCreated, 
-      String? dateUpdated, 
-      List<String>? relatedUrls, 
-      String? links, 
-      String? backlinks, 
-      List<String>? tags, 
-      List<String>? authors, 
-      String? title, 
-      String? summary, 
-      List<Attachments>? attachments, 
-      String? source, 
-      Metadata? metadata,
-      String? showType, //0默认展示  1 展示交易类型的   2 展示带有图片的
+    String? identifier,
+    String? dateCreated,
+    String? dateUpdated,
+    List<String>? relatedUrls,
+    String? links,
+    String? backlinks,
+    List<String>? tags,
+    List<String>? authors,
+    String? title,
+    String? summary,
+    List<Attachments>? attachments,
+    String? source,
+    Metadata? metadata,
+    String? showType, //0默认展示  1 展示交易类型的   2 展示带有图片的
     //捐赠
     //
     // tags Donation
@@ -138,9 +148,9 @@ class PreGodList {
     //
     // tags ETH ||  NFT  &&  attachments ！= null
 
-      String? metaType,// 0 nft  1 交易  2 捐赠  3 文章
+    String? metaType, // 0 nft  1 交易  2 捐赠  3 文章
     String? imgUrl, //图片展示链接
-  }){
+  }) {
     _identifier = identifier;
     _dateCreated = dateCreated;
     _dateUpdated = dateUpdated;
@@ -157,7 +167,7 @@ class PreGodList {
     _showType = showType;
     _metaType = metaType;
     _imgUrl = imgUrl;
-}
+  }
 
   PreGodList.fromJson(dynamic json) {
     _identifier = json['identifier'];
@@ -179,44 +189,44 @@ class PreGodList {
     _source = json['source'];
     _metadata = json['metadata'] != null ? Metadata.fromJson(json['metadata']) : null;
     // _metaType = "0";
-    if(tags != null && _tags!.contains("Donation")){
-      _metaType = "2";//捐赠
-    }
-    else if(tags != null && _tags!.contains("Mirror Entry")){
-      _metaType = "3";//文章
-    }
-    else if (json['attachments'] == null && _metadata?.tokenAddress != null) {//交易
-      _metaType = "1";//交易
+    if (tags != null && _tags!.contains("Donation")) {
+      _metaType = "2"; //捐赠
+    } else if (tags != null && _tags!.contains("Mirror Entry")) {
+      _metaType = "3"; //文章
+    } else if (json['attachments'] == null && _metadata?.tokenAddress != null) {
+      //交易
+      _metaType = "1"; //交易
       // print("tokenAddress xxx==== ${ _metadata?.tokenAddress}");
-    }
-
-    else if (json['attachments'] != null && (tags != null && (_tags!.contains("NFT"))) && _metadata?.tokenAddress == null) {//NFT
-      _metaType = "4";//NFT
+    } else if (json['attachments'] != null && (tags != null && (_tags!.contains("NFT"))) && _metadata?.tokenAddress == null) {
+      //NFT
+      _metaType = "4"; //NFT
       // print("tokenAddress ${ _metadata?.tokenAddress}");
     }
     // print("_metaType: ${_metaType}");
     _showType = "0";
-    if(_metaType == "1"){
-      _showType = "1";//交易
+    if (_metaType == "1") {
+      _showType = "1"; //交易
     }
     // if(_metaType == "1"){
     //   _showType = "1";//捐赠
     // }
-    if(json['attachments'] != null){
+    if (json['attachments'] != null) {
       _attachments!.forEach((element) {
-        if(element.type == "logo" && element.address != null){ //捐赠展示图片
-          _showType = "2";//
+        if (element.type == "logo" && element.address != null) {
+          //捐赠展示图片
+          _showType = "2"; //
           _imgUrl = element.address;
         }
-        if(element.type == "preview" && element.address != null){//nft 图片展示
+        if (element.type == "preview" && element.address != null) {
+          //nft 图片展示
           _showType = "2";
           String temStr = "";
           bool isIpfs = element.address!.contains("ipfs://");
           bool isHttp = element.address!.contains("http");
-          if(isIpfs){
+          if (isIpfs) {
             temStr = element.address!.replaceAll("ipfs://", "https://infura-ipfs.io/ipfs/");
           }
-          if(isHttp){
+          if (isHttp) {
             temStr = element.address!;
           }
           //ipfs://bafybeifu42jecmhd4l7snyhgugobq36c2uvbhmlyquo4la4thpvfr7ny6i
@@ -227,6 +237,7 @@ class PreGodList {
       });
     }
   }
+
   String? _identifier;
   String? _dateCreated;
   String? _dateUpdated;
@@ -243,54 +254,74 @@ class PreGodList {
   String? _showType;
   String? _metaType;
   String? _imgUrl;
-  PreGodList copyWith({  String? identifier,
-  String? dateCreated,
-  String? dateUpdated,
-  List<String>? relatedUrls,
-  String? links,
-  String? backlinks,
-  List<String>? tags,
-  List<String>? authors,
-  String? title,
-  String? summary,
-  List<Attachments>? attachments,
-  String? source,
-  Metadata? metadata,
-  String? showType,
-  String? metaType,
-  String? imgUrl,
-  }) => PreGodList(  identifier: identifier ?? _identifier,
-  dateCreated: dateCreated ?? _dateCreated,
-  dateUpdated: dateUpdated ?? _dateUpdated,
-  relatedUrls: relatedUrls ?? _relatedUrls,
-  links: links ?? _links,
-  backlinks: backlinks ?? _backlinks,
-  tags: tags ?? _tags,
-  authors: authors ?? _authors,
-  title: title ?? _title,
-  summary: summary ?? _summary,
-  attachments: attachments ?? _attachments,
-  source: source ?? _source,
-  metadata: metadata ?? _metadata,
-  showType: showType ?? _showType,
-  metaType: metaType ?? _metaType,
-  imgUrl: imgUrl ?? _imgUrl,
-);
+
+  PreGodList copyWith({
+    String? identifier,
+    String? dateCreated,
+    String? dateUpdated,
+    List<String>? relatedUrls,
+    String? links,
+    String? backlinks,
+    List<String>? tags,
+    List<String>? authors,
+    String? title,
+    String? summary,
+    List<Attachments>? attachments,
+    String? source,
+    Metadata? metadata,
+    String? showType,
+    String? metaType,
+    String? imgUrl,
+  }) =>
+      PreGodList(
+        identifier: identifier ?? _identifier,
+        dateCreated: dateCreated ?? _dateCreated,
+        dateUpdated: dateUpdated ?? _dateUpdated,
+        relatedUrls: relatedUrls ?? _relatedUrls,
+        links: links ?? _links,
+        backlinks: backlinks ?? _backlinks,
+        tags: tags ?? _tags,
+        authors: authors ?? _authors,
+        title: title ?? _title,
+        summary: summary ?? _summary,
+        attachments: attachments ?? _attachments,
+        source: source ?? _source,
+        metadata: metadata ?? _metadata,
+        showType: showType ?? _showType,
+        metaType: metaType ?? _metaType,
+        imgUrl: imgUrl ?? _imgUrl,
+      );
+
   String? get identifier => _identifier;
+
   String? get dateCreated => _dateCreated;
+
   String? get dateUpdated => _dateUpdated;
+
   List<String>? get relatedUrls => _relatedUrls;
+
   String? get links => _links;
+
   String? get backlinks => _backlinks;
+
   List<String>? get tags => _tags;
+
   List<String>? get authors => _authors;
+
   String? get title => _title;
+
   String? get summary => _summary;
+
   List<Attachments>? get attachments => _attachments;
+
   String? get source => _source;
+
   Metadata? get metadata => _metadata;
+
   String? get showType => _showType;
+
   String? get metaType => _metaType;
+
   String? get imgUrl => _imgUrl;
 
   Map<String, dynamic> toJson() {
@@ -317,7 +348,6 @@ class PreGodList {
     map['imgUrl'] = _imgUrl;
     return map;
   }
-
 }
 
 /// collection_address : "0xf1c121a563a84d62a5f11152d064dd0d554024f9"
@@ -334,21 +364,21 @@ class PreGodList {
 
 class Metadata {
   Metadata({
-      String? collectionAddress, 
-      String? collectionName, 
-      String? contractType, 
-      String? from, 
-      String? logIndex,
-      String? network, 
-      String? proof, 
-      String? to, 
-      String? tokenId, 
-      String? tokenStandard, 
-      String? tokenSymbol,
-    String?  amount,
+    String? collectionAddress,
+    String? collectionName,
+    String? contractType,
+    String? from,
+    String? logIndex,
+    String? network,
+    String? proof,
+    String? to,
+    String? tokenId,
+    String? tokenStandard,
+    String? tokenSymbol,
+    String? amount,
     int? decimal,
     String? tokenAddress,
-  }){
+  }) {
     _collectionAddress = collectionAddress;
     _collectionName = collectionName;
     _contractType = contractType;
@@ -363,7 +393,7 @@ class Metadata {
     _amount = amount;
     _decimal = decimal;
     _tokenAddress = tokenAddress;
-}
+  }
 
   Metadata.fromJson(dynamic json) {
     _collectionAddress = json['collection_address'];
@@ -381,6 +411,7 @@ class Metadata {
     _decimal = json['decimal'];
     _tokenAddress = json['token_address'];
   }
+
   String? _collectionAddress;
   String? _collectionName;
   String? _contractType;
@@ -392,51 +423,69 @@ class Metadata {
   String? _tokenId;
   String? _tokenStandard;
   String? _tokenSymbol;
-  String?  _amount;
+  String? _amount;
   int? _decimal;
-  String?_tokenAddress;
-Metadata copyWith({  String? collectionAddress,
-  String? collectionName,
-  String? contractType,
-  String? from,
-  String? logIndex,
-  String? network,
-  String? proof,
-  String? to,
-  String? tokenId,
-  String? tokenStandard,
-  String? decimaltokenSymbol,
-  String? amount,
-  int? decimal,
-  String? tokenAddress,
-}) => Metadata(  collectionAddress: collectionAddress ?? _collectionAddress,
-  collectionName: collectionName ?? _collectionName,
-  contractType: contractType ?? _contractType,
-  from: from ?? _from,
-  logIndex: logIndex ?? _logIndex,
-  network: network ?? _network,
-  proof: proof ?? _proof,
-  to: to ?? _to,
-  tokenId: tokenId ?? _tokenId,
-  tokenStandard: tokenStandard ?? _tokenStandard,
-  tokenSymbol: tokenSymbol ?? _tokenSymbol,
-  amount: amount ?? _amount,
-  decimal: decimal ?? _decimal,
-  tokenAddress: tokenAddress ?? _tokenAddress,
-);
+  String? _tokenAddress;
+
+  Metadata copyWith({
+    String? collectionAddress,
+    String? collectionName,
+    String? contractType,
+    String? from,
+    String? logIndex,
+    String? network,
+    String? proof,
+    String? to,
+    String? tokenId,
+    String? tokenStandard,
+    String? decimaltokenSymbol,
+    String? amount,
+    int? decimal,
+    String? tokenAddress,
+  }) =>
+      Metadata(
+        collectionAddress: collectionAddress ?? _collectionAddress,
+        collectionName: collectionName ?? _collectionName,
+        contractType: contractType ?? _contractType,
+        from: from ?? _from,
+        logIndex: logIndex ?? _logIndex,
+        network: network ?? _network,
+        proof: proof ?? _proof,
+        to: to ?? _to,
+        tokenId: tokenId ?? _tokenId,
+        tokenStandard: tokenStandard ?? _tokenStandard,
+        tokenSymbol: tokenSymbol ?? _tokenSymbol,
+        amount: amount ?? _amount,
+        decimal: decimal ?? _decimal,
+        tokenAddress: tokenAddress ?? _tokenAddress,
+      );
+
   String? get collectionAddress => _collectionAddress;
+
   String? get collectionName => _collectionName;
+
   String? get contractType => _contractType;
+
   String? get from => _from;
+
   String? get logIndex => _logIndex;
+
   String? get network => _network;
+
   String? get proof => _proof;
+
   String? get to => _to;
+
   String? get tokenId => _tokenId;
+
   String? get tokenStandard => _tokenStandard;
+
   String? get tokenSymbol => _tokenSymbol;
+
   String? get amount => _amount;
+
   int? get decimal => _decimal;
+
   String? get tokenAddress => _tokenAddress;
 
   Map<String, dynamic> toJson() {
@@ -458,7 +507,6 @@ Metadata copyWith({  String? collectionAddress,
     map['token_address'] = _tokenAddress;
     return map;
   }
-
 }
 
 /// type : "preview"
@@ -467,32 +515,40 @@ Metadata copyWith({  String? collectionAddress,
 
 class Attachments {
   Attachments({
-      String? type,
-      String? address, 
-      String? mimeType,
-  }){
+    String? type,
+    String? address,
+    String? mimeType,
+  }) {
     _type = type;
     _address = address;
     _mimeType = mimeType;
-}
+  }
 
   Attachments.fromJson(dynamic json) {
     _type = json['type'];
     _address = json['address'];
     _mimeType = json['mime_type'];
   }
+
   String? _type;
   String? _address;
   String? _mimeType;
-Attachments copyWith({  String? type,
-  String? address,
-  String? mimeType,
-}) => Attachments(  type: type ?? _type,
-  address: address ?? _address,
-  mimeType: mimeType ?? _mimeType,
-);
+
+  Attachments copyWith({
+    String? type,
+    String? address,
+    String? mimeType,
+  }) =>
+      Attachments(
+        type: type ?? _type,
+        address: address ?? _address,
+        mimeType: mimeType ?? _mimeType,
+      );
+
   String? get type => _type;
+
   String? get address => _address;
+
   String? get mimeType => _mimeType;
 
   Map<String, dynamic> toJson() {
@@ -502,5 +558,4 @@ Attachments copyWith({  String? type,
     // map['mime_type'] = _mimeType;
     return map;
   }
-
 }

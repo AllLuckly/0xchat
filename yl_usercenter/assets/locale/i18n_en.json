@@ -91,7 +91,7 @@
   "Please enter a nickname": "Please enter a nickname",
   "Profile picture": "Profile picture",
   "Please enter your personal signature": "Please enter your personal signature",
-  "Personal information": "Personal information",
+  "Personal information": "Settings",
   "Delete account": "Delete account",
   "NFT Purchase" : "NFT Purchase",
   "NFT Avatar Settings": "NFT Avatar Settings",
@@ -108,11 +108,13 @@
   "DETAILS" : "DETAILS",
   "mints_after_purchase": "Mints after purchase",
   "view_on_explorer" : "View on Explorer",
-  "view_on_ipfs": "View on IPFS",
+  "view_on_ipfs": "View on Opensea",
   "ipfs_metadata" : "IPFS Metadata",
   "ABOUT_THE_CREATOR": "ABOUT THE CREATOR",
   "buy_now": "Buy Now",
   "bv_buvina_vou_aaree_to_our": "Bv buvina vou aaree to our",
   "previews_terms": "Previews Terms.",
-  "purchase_success": "Purchase success"
+  "purchase_success": "Purchase success",
+  "Logout": "Logout",
+  "动态": "Activity"
 }

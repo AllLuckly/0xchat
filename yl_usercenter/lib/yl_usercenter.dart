@@ -14,6 +14,7 @@ import 'package:yl_cache_manager/yl_cache_manager.dart';
 import 'package:yl_common/navigator/navigator.dart';
 import 'package:yl_common/utils/storage_key_tool.dart';
 import 'package:yl_module_service/yl_module_service.dart';
+import 'package:yl_usercenter/page/other_user_info_page.dart';
 import 'package:yl_usercenter/page/set_up/buy_nft_page.dart';
 import 'package:yl_usercenter/page/usercenter_page.dart';
 import 'package:yl_wowchat/channel/chat_method_channel_utls.dart';
@@ -52,7 +53,15 @@ class YLUserCenter extends YLFlutterModule {
       case 'UserCenterPage':
         return YLNavigator.pushPage(
           context,
-            (context) => new UserCenterPage(),
+            (context) => UserCenterPage(),
+        );
+      case 'OtherUserInfoPage':
+        String address = params?['address'];
+        String nickname = params?['nickname'];
+        String headerUrl = params?['headerUrl'];
+        return YLNavigator.pushPage(
+          context,
+            (context) => OtherUserInfoPage(address: address, nickname: nickname, headerUrl: headerUrl,),
         );
       case 'BuyNftPage':
         return YLNavigator.pushPage(context, (context) => BuyNftPage());

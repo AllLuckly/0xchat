@@ -1,3 +1,4 @@
+
 import 'dart:async';
 import 'dart:convert' as convert;
 import 'dart:typed_data';
@@ -5,8 +6,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:yl_cache_manager/yl_cache_manager.dart';
+import 'package:yl_common/log_util.dart';
 import 'package:yl_common/navigator/navigator.dart';
 import 'package:yl_common/utils/storage_key_tool.dart';
+import 'package:yl_login/channel/login_method_channel_utls.dart';
 import 'package:yl_module_service/yl_module_service.dart';
 import 'package:yl_wowchat/channel/chat_method_channel_utls.dart';
 
@@ -16,11 +19,12 @@ import 'package:yl_login/page/login_page.dart';
 
 // import 'package:trust_wallet_core/flutter_trust_wallet_core.dart';
 
+
+
+
 class YLLogin extends YLFlutterModule {
   static const MethodChannel channel = const MethodChannel('yl_login');
-
-  static String get loginPageId => "login_page";
-
+  static String get loginPageId  => "login_page";
   static Future<String> get platformVersion async {
     final String version = await channel.invokeMethod('getPlatformVersion');
     return version;
@@ -42,26 +46,25 @@ class YLLogin extends YLFlutterModule {
 
   @override
   Map<String, Function> get interfaces => {
-        'changeLaguage': changeLaguage,
-        'changeTheme': changeTheme,
-        'wowChatLogout': wowChatLogout,
-        'getCurrencyHotChatId': getCurrencyHotChatId,
-        'enterChatWithType': enterChatWithType,
-        'gotoSetPhoneSystemNotify': gotoSetPhoneSystemNotify,
-        'getPhoneSystemNotifyState': getPhoneSystemNotifyState,
-        'chatMsgNofifyFlag': chatMsgNofifyFlag,
-        'setChatNotifyFlag': setChatNotifyFlag,
-        'getRegisterDeviceToken': getRegisterDeviceToken,
-        'scanLoginWowChat': scanLoginWowChat,
-        'scanQrCodeAddFriendOrGroup': scanQrCodeAddFriendOrGroup,
-        'shareImageToChat': shareImageToChat,
-        'shareLinkToChat': shareLinkToChat,
-        'wowchatShortLink': wowchatShortLink,
-        'updateZUserInfo': updateZUserInfo,
-        'updateHttpDNSConfig': updateHttpDNSConfig,
-        'initFlow': initFlow,
-        'authLogin': authLogin
-      };
+    'changeLaguage': changeLaguage,
+    'changeTheme': changeTheme,
+    'wowChatLogout': wowChatLogout,
+    'getCurrencyHotChatId': getCurrencyHotChatId,
+    'enterChatWithType': enterChatWithType,
+    'gotoSetPhoneSystemNotify': gotoSetPhoneSystemNotify,
+    'getPhoneSystemNotifyState': getPhoneSystemNotifyState,
+    'chatMsgNofifyFlag': chatMsgNofifyFlag,
+    'setChatNotifyFlag': setChatNotifyFlag,
+    'getRegisterDeviceToken': getRegisterDeviceToken,
+    'scanLoginWowChat': scanLoginWowChat,
+    'scanQrCodeAddFriendOrGroup': scanQrCodeAddFriendOrGroup,
+    'shareImageToChat': shareImageToChat,
+    'shareLinkToChat': shareLinkToChat,
+    'wowchatShortLink': wowchatShortLink,
+    'updateZUserInfo': updateZUserInfo,
+    'updateHttpDNSConfig':updateHttpDNSConfig,
+    'walletAuthorization' : walletAuthorization,
+  };
 
   @override
   navigateToPage(BuildContext context, String pageName, Map<String, dynamic>? params) {
@@ -69,7 +72,7 @@ class YLLogin extends YLFlutterModule {
       case 'LoginPage':
         return YLNavigator.pushPage(
           context,
-          (context) => new LoginPage(),
+            (context) => new LoginPage(),
         );
     }
     return null;
@@ -126,17 +129,18 @@ class YLLogin extends YLFlutterModule {
         List zappList = await YLModuleService.invoke('yl_zapp', 'getZappList', []);
         // print("Michael zappList ${zappList}");
         return zappList;
-      // case 'checkCouponRedPacketStatus'://orderId
-      //   String orderId = callMap['orderId'];
-      //   Map<String, dynamic> couponMap = await ChatInterfaceUtils.getCouponStatus(null, orderId);
-      //   return couponMap;
-      case 'openCouponRedPacket': //orderId
+    // case 'checkCouponRedPacketStatus'://orderId
+    //   String orderId = callMap['orderId'];
+    //   Map<String, dynamic> couponMap = await ChatInterfaceUtils.getCouponStatus(null, orderId);
+    //   return couponMap;
+      case 'openCouponRedPacket'://orderId
         Map paramsMap = callMap;
-        Map<String, dynamic> openResultMap =
-            await YLModuleService.invoke('yl_red_packet', 'getCouponByOrder', [paramsMap]);
+        Map<String, dynamic> openResultMap = await YLModuleService.invoke('yl_red_packet', 'getCouponByOrder', [paramsMap]);
         return openResultMap;
     }
   }
+
+
 
   void changeLaguage(BuildContext context) {
     ChatMethodChannelUtils.changeLaguage();
@@ -170,6 +174,8 @@ class YLLogin extends YLFlutterModule {
   void gotoSetPhoneSystemNotify() {
     ChatMethodChannelUtils.gotoSetPhoneSystemNotify();
   }
+
+
 
   Future<bool> getPhoneSystemNotifyState() async {
     return await ChatMethodChannelUtils.getPhoneSystemNotifyState();
@@ -207,29 +213,25 @@ class YLLogin extends YLFlutterModule {
     ChatMethodChannelUtils.scanQrCodeAddFriendOrGroup(content);
   }
 
-  void updateZUserInfo(String realName, String vipLevel, String totalInRmb) {
+  void updateZUserInfo(String realName, String vipLevel, String totalInRmb){
     ChatMethodChannelUtils.updateZUserInfo(realName, vipLevel, totalInRmb);
   }
 
   void updateHttpDNSConfig() async {
-    String domain =
-        await YLCacheManager.defaultYLCacheManager.getForeverData(StorageKeyTool.APP_DOMAIN_NAME, defaultValue: "");
+    String domain = await YLCacheManager.defaultYLCacheManager.getForeverData(StorageKeyTool.APP_DOMAIN_NAME, defaultValue: "");
     String httpURL = await YLCacheManager.defaultYLCacheManager.getForeverData("csshttps", defaultValue: "");
     String imUdpURL = await YLCacheManager.defaultYLCacheManager.getForeverData("cssudp", defaultValue: "");
     String audioUdpURL = await YLCacheManager.defaultYLCacheManager.getForeverData("cssvoice", defaultValue: "");
     ChatMethodChannelUtils.updateHttpDNSConfig(domain, httpURL, imUdpURL, audioUdpURL);
   }
 
-  void initFlow() {
-    channel.invokeMethod(
-      'initFlow',
-    );
-  }
+  Future<Map<String, dynamic>?> walletAuthorization(Map paramsMap) async {
 
-  Future<String?> authLogin() async {
-    final String? flowAddress = await channel.invokeMethod(
-      'authLogin',
-    );
-    return flowAddress;
+    final authorMap = await LoginMethodChannelUtils.walletAuthorization(paramsMap);
+     // LogUtil.e("login_walletAuthorization");
+     // Map<String, dynamic> map = {'xxx':'17171717'};
+     return authorMap;
   }
 }
+
+

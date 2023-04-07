@@ -41,6 +41,16 @@ class WalletConnectEthereumCredentials extends CustomTransactionSender {
     // TODO: implement signToSignature
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement address
+  EthereumAddress get address => throw UnimplementedError();
+
+  @override
+  MsgSignature signToEcSignature(Uint8List payload, {int? chainId, bool isEIP1559 = false}) {
+    // TODO: implement signToEcSignature
+    throw UnimplementedError();
+  }
 }
 
 class EthereumTransactionTester extends TransactionTester {

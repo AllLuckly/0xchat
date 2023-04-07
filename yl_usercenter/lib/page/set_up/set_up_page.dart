@@ -1,6 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:yl_cache_manager/yl_cache_manager.dart';
 import 'package:yl_common/model/yl_user_info.dart';
 import 'package:yl_common/navigator/navigator.dart';
@@ -9,15 +10,18 @@ import 'package:yl_common/utils/storage_key_tool.dart';
 import 'package:yl_common/utils/theme_color.dart';
 import 'package:yl_common/utils/yl_userinfo_manager.dart';
 import 'package:yl_common/widgets/common_appbar.dart';
+import 'package:yl_common/widgets/common_button.dart';
 import 'package:yl_common/widgets/common_gradient_border_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:yl_common/widgets/common_image.dart';
+import 'package:yl_common/widgets/common_toast.dart';
 import 'package:yl_localizable/yl_localizable.dart';
 import 'package:yl_usercenter/page/set_up/avatar_preview_page.dart';
 import 'package:yl_usercenter/page/set_up/set_more_page.dart';
 import 'package:yl_usercenter/page/set_up/set_nickname_page.dart';
 import 'package:yl_usercenter/page/set_up/set_signature_page.dart';
 import 'package:yl_wowchat/page/community_my_idcard.dart';
+import 'package:yl_wowchat/page/community_my_idcard_dialog.dart';
 
 import 'avatar_shop_page.dart';
 
@@ -54,7 +58,7 @@ class _SetUpPageState extends State<SetUpPage> {
         title: Localized.text('yl_usercenter.Personal information'),
         useLargeTitle: false,
         centerTitle: true,
-        canBack: false,
+        canBack: true,
       ),
       body: createBoby(),
     );
@@ -64,14 +68,17 @@ class _SetUpPageState extends State<SetUpPage> {
     return Container(
       color: ThemeColor.bgColor,
       child: CustomScrollView(
-        shrinkWrap: true,
+        shrinkWrap: false,
         slivers: <Widget>[
           new SliverPadding(
             padding: const EdgeInsets.all(0.0),
             sliver: new SliverList(
               delegate: new SliverChildListDelegate(
                 <Widget>[
-                  createHeadImgView(),
+                  // createHeadImgView(),
+                  _buildHeadImgView(),
+                  _buildHeadName(),
+                  _buildHeadDesc(),
                   createInfoSetUpView(),
                 ],
               ),
@@ -172,6 +179,124 @@ class _SetUpPageState extends State<SetUpPage> {
     );
   }
 
+  Widget _buildHeadImgView(){
+    final map = <String, String>{};
+    String host = getHostUrl(YLUserInfoManager.sharedInstance.currentUserInfo?.headUrl ?? '');
+    if (host.length > 0) {
+      map['Host'] = host;
+      map['User-Agent'] = 'PostmanRuntime/7.26.8';
+    }
+
+    String localAvatarPath = 'assets/images/user_image.png';
+    Image placeholderImage = Image.asset(
+      localAvatarPath,
+      fit: BoxFit.cover,
+      width: Adapt.px(100),
+      height: Adapt.px(100),
+      package: 'yl_wowchat',
+    );
+
+    return Center(
+      child: GestureDetector(
+        child: Container(
+          margin: EdgeInsets.only(top: Adapt.px(16)),
+          height: Adapt.px(100),
+          width: Adapt.px(100),
+          child: Stack(
+            children: [
+              Container(
+                alignment: Alignment.center,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(Adapt.px(100)),
+                  child: CachedNetworkImage(
+                    height: Adapt.px(100),
+                    width: Adapt.px(100),
+                    imageUrl: YLUserInfoManager.sharedInstance.currentUserInfo?.headUrl ?? '',
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => placeholderImage,
+                    errorWidget: (context, url, error) => placeholderImage,
+                    // httpHeaders: map,
+                  ),
+                ),
+              ),
+              Center(
+                child: Container(
+                  width: Adapt.px(95),
+                  height: Adapt.px(95),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(Adapt.px(95)),
+                    border: Border.all(
+                      width: Adapt.px(3),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        onTap: (){
+          onChangeHeadImg();
+        },
+      ),
+    );
+  }
+
+  Widget _buildHeadName() {
+    String nickName = YLUserInfoManager.sharedInstance.currentUserInfo?.nickName ?? "";
+
+    return Center(
+      child: Container(
+        margin: EdgeInsets.only(top:Adapt.px(16)),
+        alignment: Alignment.center,
+        height: Adapt.px(28),
+        child: Text(
+          nickName,
+          style: TextStyle(color: ThemeColor.color0, fontSize: Adapt.px(20),fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeadDesc() {
+    String address = YLUserInfoManager.sharedInstance.currentUserInfo?.token ?? '';
+    String addressFoot = address.substring(address.length - 4);
+    String addressHead = address.substring(0, 6);
+    String showAddress = '$addressHead...$addressFoot';
+    return GestureDetector(
+      child: Center(
+        child: Container(
+          margin: EdgeInsets.only(top: Adapt.px(2)),
+          height: Adapt.px(19.6),
+          width: double.infinity,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                showAddress,
+                maxLines: 1,
+                style: TextStyle(color: ThemeColor.color120, fontSize: Adapt.px(14),fontWeight: FontWeight.w400),
+              ),
+              SizedBox(
+                width: Adapt.px(5),
+              ),
+              CommonImage(
+                iconName: "icon_copy.png",
+                width: Adapt.px(16),
+                height: Adapt.px(16),
+              ),
+            ],
+          ),
+        ),
+      ),
+      onTap: () {
+        //点击复制
+        Clipboard.setData(ClipboardData(text: address));
+        CommonToast.instance.show(context, Localized.text("yl_usercenter.copy_successfully"));
+      },
+    );
+  }
+
   String getHostUrl(String url) {
     RegExp regExp = new RegExp(r"^.*?://(.*?)/.*?$");
     RegExpMatch? match = regExp.firstMatch(url);
@@ -262,9 +387,10 @@ class _SetUpPageState extends State<SetUpPage> {
 
   Widget createInfoSetUpView() {
     return Container(
-      height: 252,
+      // height: 252,
+      height: 202,
       width: double.infinity,
-      margin: EdgeInsets.only(left: Adapt.px(16), right: Adapt.px(16), bottom: Adapt.px(16)),
+      margin: EdgeInsets.only(left: Adapt.px(16), right: Adapt.px(16), bottom: Adapt.px(16),top: Adapt.px(24)),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(12)),
         color: ThemeColor.gray5,
@@ -277,7 +403,8 @@ class _SetUpPageState extends State<SetUpPage> {
                 isRightImage: false,
                 leftTitle: Localized.text('yl_usercenter.Nickname'),
                 rightTitle: mCurrentUserInfo?.nickName ?? '',
-                rightIconName: ''),
+                rightIconName: '',
+                leftIconName: 'icon_setting_nickname.png'),
             onTap: () {
               YLNavigator.pushPage(context, (context) => SetNicknamePage()).then((value) {
                 setState(() {});
@@ -295,7 +422,8 @@ class _SetUpPageState extends State<SetUpPage> {
                 isRightImage: false,
                 leftTitle: Localized.text('yl_usercenter.Signature'),
                 rightTitle: '',
-                rightIconName: ''),
+                rightIconName: '',
+                leftIconName: 'icon_setting_signature.png'),
             onTap: () {
               YLNavigator.pushPage(context, (context) => const SetSignaturePage()).then((value) {
                 setState(() {});
@@ -313,27 +441,35 @@ class _SetUpPageState extends State<SetUpPage> {
                 isRightImage: true,
                 leftTitle: Localized.text('yl_usercenter.My QR code'),
                 rightTitle: '',
-                rightIconName: 'icon_qrcode.png'),
+                rightIconName: 'icon_qrcode.png',
+                leftIconName: 'icon_setting_qrcode.png'),
             onTap: () {
-              YLNavigator.pushPage(context, (context) => CommunityMyIdCard());
+              showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (BuildContext context) {
+                    return CommunityMyIdCardDialog();
+                  });
+              // YLNavigator.pushPage(context, (context) => CommunityMyIdCard());
             },
           ),
-          Container(
-            color: ThemeColor.gray6,
-            height: Adapt.px(0.5),
-            width: double.infinity,
-          ),
-          InkWell(
-            child: createRow(
-                isRightTitle: true,
-                isRightImage: false,
-                leftTitle: Localized.text('yl_usercenter.NFT Purchase'),
-                rightTitle: '',
-                rightIconName: ''),
-            onTap: () {
-              YLNavigator.pushPage(context, (context) => const AvatarShopPage());
-            },
-          ),
+          // Container(
+          //   color: ThemeColor.gray6,
+          //   height: Adapt.px(0.5),
+          //   width: double.infinity,
+          // ),
+          // InkWell(
+          //   child: createRow(
+          //       isRightTitle: true,
+          //       isRightImage: false,
+          //       leftTitle: Localized.text('yl_usercenter.NFT Purchase'),
+          //       rightTitle: '',
+          //       rightIconName: '',
+          //       leftIconName: 'icon_setting_nft.png'),
+          //   onTap: () {
+          //     YLNavigator.pushPage(context, (context) => const AvatarShopPage());
+          //   },
+          // ),
           Container(
             color: ThemeColor.gray6,
             height: Adapt.px(0.5),
@@ -345,9 +481,12 @@ class _SetUpPageState extends State<SetUpPage> {
                 isRightImage: false,
                 leftTitle: Localized.text('yl_usercenter.More'),
                 rightTitle: '',
-                rightIconName: ''),
+                rightIconName: '',
+                leftIconName:'icon_setting_more.png'),
             onTap: () {
-              YLNavigator.pushPage(context, (context) => const SetMorePage());
+              YLNavigator.pushPage(context, (context) => const SetMorePage()).then((value) {
+                setState(() {});
+              });
             },
           ),
         ],
@@ -360,7 +499,9 @@ class _SetUpPageState extends State<SetUpPage> {
       required bool isRightImage,
       required String leftTitle,
       required String rightTitle,
-      required String rightIconName}) {
+      required String rightIconName,
+        String? leftIconName,
+      }) {
     return Container(
       height: Adapt.px(50),
       width: double.infinity,
@@ -368,6 +509,15 @@ class _SetUpPageState extends State<SetUpPage> {
         children: [
           SizedBox(
             width: Adapt.px(16),
+          ),
+          if(leftIconName != null) CommonImage(
+            iconName: leftIconName,
+            width: Adapt.px(32),
+            height: Adapt.px(32),
+            package: 'yl_usercenter',
+          ),
+          if(leftIconName != null) SizedBox(
+            width: Adapt.px(12),
           ),
           Text(
             leftTitle,

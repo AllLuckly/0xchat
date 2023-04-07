@@ -14,7 +14,10 @@ import 'package:quiver/check.dart';
 /// 马蹄链获取NFT
 Future<MyMainnetEntity?> getMyMainnetEntitys({BuildContext? context, Map<String, dynamic>? params, String? account}) async {
   final map = <String, dynamic>{};
-  String url = 'https://polygon-mainnet.g.alchemyapi.io/nft/v2/xxxxx/getNFTs?owner=${account}&withMetadata=true';
+
+  // 'https://pregod.rss3.dev/v0.4.0/account:0xC8b960D09C0078c18Dcbe7eB9AB9d816BcCa8944@ethereum/notes?tags=NFT&exclude_tags=POAP'
+
+  String url = 'https://polygon-mainnet.g.alchemyapi.io/nft/v2/6AdLOpPPOiEy5Bucjk6-5YoCRu49O856/getNFTs?owner=${account}&withMetadata=true';
   return YLNetwork.instance.doRequest(
     context,
     url: url,
@@ -26,7 +29,7 @@ Future<MyMainnetEntity?> getMyMainnetEntitys({BuildContext? context, Map<String,
     params: params
   ).then((YLResponse response){
     if (response.data is Map) {
-      // LogUtil.e("MyMainnetEntity=============xxxxxxxxxxxxxxx : ${response.data}");
+      LogUtil.e("MyMainnetEntity=============xxxxxxxxxxxxxxx : ${response.data}");
       MyMainnetEntity assetsEntity = MyMainnetEntity.fromJson(Map<String, dynamic>.from(response.data));
       // LogUtil.e("MyMainnetEntity=============xxxxxxxxxxxxxxx : ${assetsEntity.ownedNfts!.first.metadata?.image}");
       return assetsEntity;
@@ -42,9 +45,8 @@ Future<MyMainnetEntity?> getMyMainnetEntitys({BuildContext? context, Map<String,
 /// eth获取NFT
 Future<MyMainnetEntity?> getMyEthEntitys({BuildContext? context, Map<String, dynamic>? params, String? account}) async {
   final map = <String, dynamic>{};
-  // map['X-API-KEY'] = 'a34f499e3db94c2ebaea8b1ba53fc721';
   // 'https://pregod.rss3.dev/v0.4.0/account:0xC8b960D09C0078c18Dcbe7eB9AB9d816BcCa8944@ethereum/notes?tags=NFT&exclude_tags=POAP'
-  String url = 'https://eth-mainnet.g.alchemy.com/nft/v2/xxxxxxxx/getNFTs?owner=${account}&withMetadata=true';
+  String url = 'https://eth-mainnet.g.alchemy.com/nft/v2/6AdLOpPPOiEy5Bucjk6-5YoCRu49O856/getNFTs?owner=${account}&withMetadata=true';
   return YLNetwork.instance.doRequest(
     context,
     url: url,
@@ -90,7 +92,12 @@ class MyMainnetEntity {
         Map<String, dynamic>item = v;
         if(item["metadata"] is Map){
           if(item["metadata"].containsKey('image') == true){
-            _ownedNfts?.add(OwnedNfts.fromJson(v));
+            bool? isGlb = item["metadata"]["image"]?.contains(".glb");
+            bool? isIpfs = item["metadata"]["image"]?.contains("ipfs://");
+            if(isGlb == false && isIpfs == false){
+              LogUtil.e("metadata image : ${item["metadata"]["image"]}");
+              _ownedNfts?.add(OwnedNfts.fromJson(v));
+            }
           }
         }
       });
@@ -314,10 +321,13 @@ class Metadata {
   Metadata({
       String? name, 
       String? description, 
-      String? image,}){
+      String? image,
+      String? external_link,
+  }){
     _name = name;
     _description = description;
     _image = image;
+    _external_link = external_link;
 }
 
   Metadata.fromJson(dynamic json) {
@@ -326,38 +336,45 @@ class Metadata {
           _name = json['name'];
     _description = json['description'];
     _image = json['image'];
+          _external_link = json['external_link'];
       }else{
          _name = '';
     _description = '';
     _image = '';
+         _external_link = '';
       }
     }else{
       
       _name = '';
     _description = '';
     _image = '';
+    _external_link = '';
     }
     
   }
   String? _name;
   String? _description;
   String? _image;
+  String? _external_link;
 Metadata copyWith({  String? name,
   String? description,
   String? image,
+  String? external_link,
 }) => Metadata(  name: name ?? _name,
   description: description ?? _description,
   image: image ?? _image,
+  external_link:external_link ?? _external_link,
 );
   dynamic get name => _name;
   dynamic get description => _description;
   dynamic get image => _image;
-
+  dynamic get external_link => _external_link;
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['name'] = _name;
     map['description'] = _description;
     map['image'] = _image;
+    map['external_link'] = _external_link;
     return map;
   }
 

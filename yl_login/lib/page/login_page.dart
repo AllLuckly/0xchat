@@ -1,7 +1,6 @@
 import 'dart:convert' as convert;
 import 'dart:io';
 
-import 'package:algorand_dart/algorand_dart.dart';
 import 'package:flutter/material.dart';
 // import 'package:trust_wallet_core/flutter_trust_wallet_core.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -60,6 +59,7 @@ class LoginPage extends StatefulWidget {
 
   @override
   _LoginPageState createState() => _LoginPageState();
+
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -111,25 +111,22 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   getApps() async{
-    // bool isMetamask = await LoginMethodChannelUtils.checkAvailability('metamask://');
-    // if(isMetamask){
-    //   // Map metamask =  {"title": 'MetaMask','iconName' : 'meta_icon.png', 'schema' :'wc'};
-    //   Map metamask =  {"title": 'MetaMask','iconName' : 'meta_icon.png', 'schema' :'metamask'};//fix 会跳转到其他支持wc协议的app
-    //   loginList.add(metamask);
-    // }
-    // bool isTrust = await LoginMethodChannelUtils.checkAvailability('trust://');
-    // if(isTrust){
-    //   Map trust =  {"title": 'Trust Wallet','iconName' : 'trust_icon.png', 'schema' :'trust'};
-    //   loginList.add(trust);
-    // }
-    // bool isImToken = await LoginMethodChannelUtils.checkAvailability('imtokenv2://');
-    // if(isImToken){
-    //   Map imtokenv2 =  {"title": 'imToken','iconName' : 'imToken_icon.png', 'schema' :'imtokenv2'};
-    //   loginList.add(imtokenv2);
-    // }
-    Map imtokenv2 =  {"title": 'blocto','iconName' : 'blocto_icon.png', 'schema' :'blocto'};
-    loginList.add(imtokenv2);
-
+    bool isMetamask = await LoginMethodChannelUtils.checkAvailability('metamask://');
+    if(isMetamask){
+      // Map metamask =  {"title": 'MetaMask','iconName' : 'meta_icon.png', 'schema' :'wc'};
+      Map metamask =  {"title": 'MetaMask','iconName' : 'meta_icon.png', 'schema' :'metamask'};//fix 会跳转到其他支持wc协议的app
+      loginList.add(metamask);
+    }
+    bool isTrust = await LoginMethodChannelUtils.checkAvailability('trust://');
+    if(isTrust){
+      Map trust =  {"title": 'Trust Wallet','iconName' : 'trust_icon.png', 'schema' :'trust'};
+      loginList.add(trust);
+    }
+    bool isImToken = await LoginMethodChannelUtils.checkAvailability('imtokenv2://');
+    if(isImToken){
+      Map imtokenv2 =  {"title": 'imToken','iconName' : 'imToken_icon.png', 'schema' :'imtokenv2'};
+      loginList.add(imtokenv2);
+    }
     if (mounted) setState(() {});
   }
 
@@ -174,13 +171,13 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(
                       height: Adapt.px(5),
                     ),
-                    Text(
-                      '0xChat',
-                      style: TextStyle(
-                          color: ThemeColor.titleColor,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold),
-                    ),
+                    // Text(
+                    //   '0xChat',
+                    //   style: TextStyle(
+                    //       color: ThemeColor.titleColor,
+                    //       fontSize: 24,
+                    //       fontWeight: FontWeight.bold),
+                    // ),
                     SizedBox(
                       height: Adapt.px(14),
                     ),
@@ -356,8 +353,17 @@ class _LoginPageState extends State<LoginPage> {
                            decoration: TextDecoration.underline,
                          ),
                        ),
-                       onTap: () async {
+                       onTap: () async {//游客登录 写死一个钱包地址
+                       //
+                        //  address = "0xd8bd35a994d14929323b8a837af5ca4c0f744914";
+                         //我自己的
                          address = '0x96d7cf71f6391a6092487c0390c4977052e78ddb';
+                        //未知，数据蛮多
+                        //  address = '0xC8b960D09C0078c18Dcbe7eB9AB9d816BcCa8944';
+                         //老板
+                         // address = '0x4f714880A5847D335606bb37848CcAcbcD6d5836';
+
+
                          loginIm("");
                          final prefs = await SharedPreferences.getInstance();
                          await prefs.setBool('isGuestLogin', true);
@@ -515,7 +521,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget buildListRow(item) {
-    return InkWell(
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       child: Row(
         children: [
           ClipRRect(
@@ -538,21 +545,17 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
       onTap: ()  async{
+        // print("欧尼tap");
         if(!checkboxSelected){
           CommonToast.instance.show(context, Localized.text("yl_login.Agree to the agreement to log in"));
           return;
         }
-
-        // loginSchema = item['schema'];
-        // _login(captchaStr : loginSchema);
-
-        final myAddress = await YLModuleService.invoke('yl_login', 'authLogin', []);
-        address = myAddress;
-        loginIm('');
-
+        loginSchema = item['schema'];
+        _login(captchaStr : loginSchema);
         final prefs = await SharedPreferences.getInstance();
         prefs.setBool('isGuestLogin', false);
-  
+        // address = "0x96d7cf71f6391a6092487c0390c4977052e78ddb";
+        // loginIm("0x117a2c4041d172a3447797fa3fceea72d2ffd4a2afcbfd954fe90e0a77828f686722ecb633070d8898d82ff2a67c365f398df2c4f6d9c8e2449ca169eb0b3e211b");
       },
     );
   }
@@ -583,10 +586,9 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _state = TransactionState.connected);
     print('success ===' + _displayUri);
     Future.delayed(const Duration(seconds: 1), () async {
-
       try {
         final walletLoginInfoStr = await _transactionTester?.personalSign(
-            message: "login", address: session.accounts[0], password: '');
+            message: "Welcome to 0xchat!\n\nClick to sign in and accept the 0xchat Terms of Service\n\nThis request will not trigger a blockchain transaction or cost any gas fees.", address: session.accounts[0], password: '');
         print('my  ------- to sign ----${walletLoginInfoStr}');
         loginIm(walletLoginInfoStr ?? '');
         // setState(() => _state = TransactionState.success);
@@ -595,7 +597,6 @@ class _LoginPageState extends State<LoginPage> {
         userInfo.token = session.accounts[0];
         YLUserInfoManager.sharedInstance
           .updateUserInfo(userInfo, isUpdate: false);
-
 
         Future.delayed(Duration.zero, () {
           YLNavigator.popToPage(context,
@@ -608,6 +609,10 @@ class _LoginPageState extends State<LoginPage> {
         print('Transaction error: $e');
       }
     });
+
+  }
+
+  static void walletAuthorization(){
 
   }
 

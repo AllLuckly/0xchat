@@ -29,9 +29,9 @@ class _SetNicknamePageState extends State<SetNicknamePage> {
     _controller = TextEditingController();
     mCurrentUserInfo = YLUserInfoManager.sharedInstance.currentUserInfo;
     _controller?.text = mCurrentUserInfo?.nickName ?? '';
-    _controller?.addListener(() {
-      print(_controller?.text);
-    });
+    // _controller?.addListener(() {
+    //   print(_controller?.text);
+    // });
   }
 
   @override
@@ -49,30 +49,40 @@ class _SetNicknamePageState extends State<SetNicknamePage> {
           title: Localized.text('yl_usercenter.Nickname settings'),
           useLargeTitle: false,
           centerTitle: true,
-          canBack: false,
+          canBack: true,
           actions: <Widget>[
             Container(
-              margin: EdgeInsets.only(right: Adapt.px(5), top: Adapt.px(12)),
+              margin: EdgeInsets.only(right: Adapt.px(5)),
               color: Colors.transparent,
-              child: CommonButton(
-                backgroundColor: Colors.transparent,
-                width: Adapt.px(44),
-                height: Adapt.px(44),
-                content : Localized.text('yl_usercenter.Done'),
-                onPressed: () async {
-                  bool isSuccess = await YLModuleService.invoke("yl_wowchat", "doSubmitAndSaveForNickname", [_controller?.text]);
-                  if(isSuccess){
-                    mCurrentUserInfo?.nickName = _controller?.text;
-                    YLUserInfoManager.sharedInstance.updateUserInfo(mCurrentUserInfo!);
-                    CommonToast.instance.show(context, Localized.text("yl_usercenter.Set successfully"));
-                    YLNavigator.pop(context, _controller?.text);
-                  }else{
-                    CommonToast.instance.show(context, Localized.text("yl_usercenter.set_failed"));
-                  }
-                  setState(() {
-                  });
-                  // YLNavigator.pushPage(context, (context) => SetUpPage());
-                },
+              child: ValueListenableBuilder(
+                valueListenable: _controller!,
+                builder: (_,__,___) {
+                  return CommonButton(
+                    backgroundColor: Colors.transparent,
+                    width: Adapt.px(44),
+                    height: Adapt.px(44),
+                    content: Localized.text('yl_usercenter.Done'),
+                    fontColor: _controller!.text.isNotEmpty ? ThemeColor.white01 : ThemeColor.gray7,
+                    onPressed: _controller!.text.isNotEmpty ? () async {
+                      bool isSuccess = await YLModuleService.invoke(
+                          "yl_wowchat", "doSubmitAndSaveForNickname",
+                          [_controller?.text]);
+                      if (isSuccess) {
+                        mCurrentUserInfo?.nickName = _controller?.text;
+                        YLUserInfoManager.sharedInstance.updateUserInfo(
+                            mCurrentUserInfo!);
+                        CommonToast.instance.show(context, Localized.text(
+                            "yl_usercenter.Set successfully"));
+                        YLNavigator.pop(context, _controller?.text);
+                      } else {
+                        CommonToast.instance.show(context, Localized.text(
+                            "yl_usercenter.set_failed"));
+                      }
+                      setState(() {});
+                      // YLNavigator.pushPage(context, (context) => SetUpPage());
+                    } : (){},
+                  );
+                }
               ),
             ),
           ],

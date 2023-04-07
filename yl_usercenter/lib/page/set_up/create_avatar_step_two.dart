@@ -13,8 +13,6 @@ import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:yl_localizable/yl_localizable.dart';
 import 'package:yl_usercenter/page/set_up/create_avatar_step_three.dart';
 
-import '../nft_avatar/nft_avatar_upload_page.dart';
-
 class CreateAvatarStepTwo extends StatefulWidget {
   List<File?> fileList;
   CreateAvatarStepTwo({Key? key, required this.fileList}): super(key: key);
@@ -52,10 +50,10 @@ class _CreateAvatarStepTwoState extends State<CreateAvatarStepTwo> {
               ),
               border: Border.all(color: ThemeColor.color180, width: 2),
               gradient: LinearGradient(
-                colors: [ThemeColor.purpleStart, ThemeColor.purpleEnd]),
+                colors: [ThemeColor.gradientMainStart, ThemeColor.gradientMainEnd]),
             ),
             child: Text(
-              'Creat NFT Avatar',
+              'Next',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 15,
@@ -64,11 +62,10 @@ class _CreateAvatarStepTwoState extends State<CreateAvatarStepTwo> {
             ),
           ),
           onTap: (){
-            // YLNavigator.pushPage(context, (context) => CreateAvatarStepThree(fileList: widget.fileList,gender: seletIndex,)).then((value){
-            //   setState(() {
-            //   });
-            // });
-            YLNavigator.pushPage(context, (context) => NFTAvatarUploadPage(fileList: widget.fileList,gender:seletIndex ,nftAvatarCount : 5, productId:'9',));
+            YLNavigator.pushPage(context, (context) => CreateAvatarStepThree(fileList: widget.fileList,gender: seletIndex,)).then((value){
+              setState(() {
+              });
+            });
           },
         ),
         body: SafeArea(
@@ -122,7 +119,7 @@ class _CreateAvatarStepTwoState extends State<CreateAvatarStepTwo> {
           radius: Adapt.px(16),
           gradient: SweepGradient(
               colors: index == seletIndex
-                  ? [ThemeColor.purpleStart, ThemeColor.purpleEnd]
+                  ? [ThemeColor.gradientMainStart, ThemeColor.gradientMainEnd]
                   : [Colors.transparent, Colors.transparent]),
           child: Container(
             margin: EdgeInsets.all(Adapt.px(2)),
@@ -146,7 +143,7 @@ class _CreateAvatarStepTwoState extends State<CreateAvatarStepTwo> {
                           fontSize: 18,
                           color: ThemeColor.titleColor),
                       colors: index == seletIndex
-                          ? [ThemeColor.purpleStart, ThemeColor.purpleEnd]
+                          ? [ThemeColor.gradientMainStart, ThemeColor.gradientMainEnd]
                           : [ThemeColor.color0, ThemeColor.color0]),
                 ),
                 Spacer(),

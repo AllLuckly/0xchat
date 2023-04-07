@@ -54,15 +54,24 @@ import 'package:flutter/services.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:yl_wowchat/page/community_my_idcard_dialog.dart';
 
-class UserCenterPage extends StatefulWidget {
-  const UserCenterPage({Key? key}) : super(key: key);
+class OtherUserInfoPage extends StatefulWidget {
+  final String? address;
+  final String? nickname;
+  final String? headerUrl;
+
+  const OtherUserInfoPage({Key? key, this.address, this.nickname, this.headerUrl})
+      : super(key: key);
 
   @override
-  State<UserCenterPage> createState() => _UserCenterPageState();
+  State<OtherUserInfoPage> createState() => _OtherUserInfoPageState();
 }
 
-class _UserCenterPageState extends BasePageState<UserCenterPage>
-    with TickerProviderStateMixin, YLUserInfoObserver, WidgetsBindingObserver, CommonStateViewMixin {
+class _OtherUserInfoPageState extends BasePageState<OtherUserInfoPage>
+    with
+        TickerProviderStateMixin,
+        YLUserInfoObserver,
+        WidgetsBindingObserver,
+        CommonStateViewMixin {
   MyAssetsEntity? assetsEntity;
   MyPreGod? preGod;
   late ScrollController _nestedScrollController;
@@ -81,6 +90,7 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
   double _scrollY = 0.0;
 
   late String _addressStr;
+  bool _isShowOtherUserInfo = false;
 
   String mHostName = ''; //当前的domain
 
@@ -89,10 +99,6 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
   num nftHotChatLength = 0;
 
   num nftLength = 0;
-
-  bool isShowSos = false; //展示
-
-  bool isCloseSos = false; //是否手动关闭
 
   bool isShowLoading = true;
 
@@ -108,8 +114,10 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
     imageCache.maximumSize = 10;
     YLUserInfoManager.sharedInstance.addObserver(this);
     WidgetsBinding.instance.addObserver(this);
-
-    _addressStr = YLUserInfoManager.sharedInstance.currentUserInfo?.token ?? '';
+    _isShowOtherUserInfo = widget.address != null && widget.address!.isNotEmpty;
+    _addressStr = widget.address != null && widget.address!.isNotEmpty
+        ? widget.address!
+        : (YLUserInfoManager.sharedInstance.currentUserInfo?.token ?? '');
     ThemeManager.addOnThemeChangedCallback(onThemeStyleChange);
     CachedNetworkImage.logLevel = CacheManagerLogLevel.debug;
     _getAccountInfoFn();
@@ -145,12 +153,14 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
   void _initInterface() async {
     _myGenerationAiStepsEntity = await ChooseImageUploadNetManage.getAiGenerationSteps(
         ownerAddress: _addressStr,
-        processId: await YLCacheManager.defaultYLCacheManager.getForeverData('processId', defaultValue: ''));
+        processId: await YLCacheManager.defaultYLCacheManager
+            .getForeverData('processId', defaultValue: ''));
     if (mounted) setState(() {});
   }
 
   void initFromCache() async {
-    mHostName = await YLCacheManager.defaultYLCacheManager.getForeverData(StorageKeyTool.APP_DOMAIN_NAME, defaultValue: 'yl.com');
+    mHostName = await YLCacheManager.defaultYLCacheManager
+        .getForeverData(StorageKeyTool.APP_DOMAIN_NAME, defaultValue: 'yl.com');
   }
 
   void _getAccountInfoFn() async {
@@ -165,7 +175,6 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
     List<OwnedNfts> mainnetList = await _getMyMainnetEntitys();
     isShowLoading = false;
     nftLength = ethList.length + mainnetList.length;
-    isShowSos = nftLength > 0 ? false : true;
     if (mounted) setState(() {});
   }
 
@@ -209,8 +218,6 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
 
   @override
   Widget build(BuildContext context) {
-    LogUtil.e((isShowSos && isCloseSos == true));
-    bool isLogin = YLUserInfoManager.sharedInstance.isLogin;
     return Scaffold(
       backgroundColor: ThemeColor.color200,
       appBar: CommonAppBar(
@@ -219,30 +226,6 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
         useLargeTitle: false,
         centerTitle: false,
         canBack: false,
-        actions: <Widget>[
-          isLogin
-              ? Container(
-                  margin: EdgeInsets.only(right: Adapt.px(5), top: Adapt.px(12)),
-                  color: Colors.transparent,
-                  child: YLEButton(
-                    highlightColor: Colors.transparent,
-                    color: Colors.transparent,
-                    minWidth: Adapt.px(44),
-                    height: Adapt.px(44),
-                    child: CommonImage(
-                      iconName: "nav_more_dot.png",
-                      width: Adapt.px(24),
-                      height: Adapt.px(24),
-                    ),
-                    onPressed: () {
-                      YLNavigator.pushPage(context, (context) => SetUpPage()).then((value) {
-                        setState(() {});
-                      });
-                    },
-                  ),
-                )
-              : Container(),
-        ],
       ),
       // body: buildBoby(),
       body: commonStateViewWidget(
@@ -256,7 +239,8 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
                   backgroundColor: ThemeColor.color200,
                   pinned: true,
                   floating: true,
-                  expandedHeight: (isShowSos && isCloseSos == false) ? Adapt.px(391 + 76) : Adapt.px(391),
+                  leading: Container(),
+                  expandedHeight: Adapt.px(331),
                   elevation: 0,
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.pin,
@@ -269,54 +253,6 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
                           SizedBox(
                             height: Adapt.px(3),
                           ),
-                          Visibility(
-                              child: Container(
-                                width: Adapt.px(MediaQuery.of(context).size.width - 24 * 2),
-                                margin: EdgeInsets.only(left: Adapt.px(24), right: Adapt.px(24), bottom: Adapt.px(16)),
-                                height: Adapt.px(60),
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(16),
-                                  ),
-                                  border: Border.all(color: ThemeColor.color180, width: 0),
-                                  gradient: LinearGradient(colors: [ThemeColor.gradientMainStart, ThemeColor.gradientMainEnd]),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      constraints: BoxConstraints(
-                                        maxWidth: Adapt.px(280),
-                                      ),
-                                      margin: EdgeInsets.only(left: Adapt.px(16), right: Adapt.px(5)),
-                                      child: Text("You don't have an NFT avatar yet, use 0xavatar to create one!",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 14,
-                                            color: ThemeColor.color0,
-                                          ),
-                                          maxLines: 2),
-                                    ),
-                                    GestureDetector(
-                                      child: CommonImage(
-                                        iconName: "close_icon_white.png",
-                                        width: Adapt.px(24),
-                                        height: Adapt.px(24),
-                                      ),
-                                      onTap: () {
-                                        isCloseSos = true;
-                                        setState(() {});
-                                      },
-                                    ),
-                                    SizedBox(
-                                      width: Adapt.px(16),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              visible: (isShowSos && isCloseSos == false)
-
-                              // visible: true
-                              ),
                           SizedBox(
                             height: Adapt.px(3),
                           ),
@@ -326,7 +262,7 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
                           ),
                           buildHeadName(),
                           buildHeadDesc(),
-                          buildHeadStatistics(),
+                          _isShowOtherUserInfo ? Container() : buildHeadStatistics(),
                           buildHeadAdditional(),
                         ],
                       ),
@@ -358,9 +294,15 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
                               // Tab(text: Localized.text("yl_usercenter.捐赠")),
                               // Tab(text: Localized.text("yl_usercenter.文章")),
                             ],
-                            labelStyle: TextStyle(fontSize: 14, color: ThemeColor.titleColor, fontWeight: FontWeight.w600),
-                            unselectedLabelStyle: TextStyle(fontSize: 14, color: ThemeColor.color120, fontWeight: FontWeight.w400),
-                            padding: EdgeInsets.symmetric(horizontal: Adapt.screenW()/4),
+                            labelStyle: TextStyle(
+                                fontSize: 14,
+                                color: ThemeColor.titleColor,
+                                fontWeight: FontWeight.w600),
+                            unselectedLabelStyle: TextStyle(
+                                fontSize: 14,
+                                color: ThemeColor.color120,
+                                fontWeight: FontWeight.w400),
+                            padding: EdgeInsets.symmetric(horizontal: Adapt.screenW() / 4),
                             //RIGHT 30
                             indicator: RoundTabIndicator(
                                 borderSide: BorderSide(width: Adapt.px(6)),
@@ -394,9 +336,14 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
               Column(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(left: Adapt.px(15), right: Adapt.px(15), top: Adapt.px(15)),
+                    margin:
+                        EdgeInsets.only(left: Adapt.px(15), right: Adapt.px(15), top: Adapt.px(15)),
                     height: Adapt.px(31),
-                    padding: EdgeInsets.only(left: Adapt.px(2), right: Adapt.px(2), top: Adapt.px(2), bottom: Adapt.px(2)),
+                    padding: EdgeInsets.only(
+                        left: Adapt.px(2),
+                        right: Adapt.px(2),
+                        top: Adapt.px(2),
+                        bottom: Adapt.px(2)),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(4.0)),
                       border: Border.all(
@@ -427,7 +374,9 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
                     ),
                   ),
                   Container(
-                    height: Adapt.screenH() - MediaQuery.of(context).padding.top - Adapt.px(31 + 15 + 44),
+                    height: Adapt.screenH() -
+                        MediaQuery.of(context).padding.top -
+                        Adapt.px(31 + 15 + 44),
                     child: TabBarView(
                       physics: NeverScrollableScrollPhysics(),
                       controller: _dynamicTabController,
@@ -471,7 +420,7 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
   }
 
   Widget buildHeadImage() {
-    String headImgUrl = YLUserInfoManager.sharedInstance.currentUserInfo?.headUrl ?? "";
+    String headImgUrl = widget.headerUrl ?? '';
     LogUtil.e("headImgUrl: ${headImgUrl}");
     final map = <String, String>{};
     String host = getHostUrl(headImgUrl ?? '');
@@ -532,61 +481,60 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
               ),
             ),
           ),
-          GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () {
-              _jumpLogicForNft();
-            },
-            child: Stack(
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  alignment: Alignment.topRight,
-                  child: Container(
-                    width: Adapt.px(33),
-                    height: Adapt.px(33),
-                    child: Center(
-                      child: CommonImage(
-                        iconName: 'icon_ai_images.png',
-                        width: Adapt.px(32),
-                        height: Adapt.px(32),
-                        package: 'yl_usercenter',
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  alignment: Alignment.topRight,
-                  child: Container(
-                    width: Adapt.px(33),
-                    height: Adapt.px(33),
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(Adapt.px(33)),
-                      border: Border.all(
-                        width: Adapt.px(3),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // GestureDetector(
+          //   behavior: HitTestBehavior.translucent,
+          //   onTap: () {
+          //     _jumpLogicForNft();
+          //   },
+          //   child: Stack(
+          //     children: [
+          //       Container(
+          //         width: double.infinity,
+          //         height: double.infinity,
+          //         alignment: Alignment.topRight,
+          //         child: Container(
+          //           width: Adapt.px(33),
+          //           height: Adapt.px(33),
+          //           child: Center(
+          //             child: CommonImage(
+          //               iconName: 'icon_ai_images.png',
+          //               width: Adapt.px(32),
+          //               height: Adapt.px(32),
+          //               package: 'yl_usercenter',
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //       Container(
+          //         width: double.infinity,
+          //         height: double.infinity,
+          //         alignment: Alignment.topRight,
+          //         child: Container(
+          //           width: Adapt.px(33),
+          //           height: Adapt.px(33),
+          //           decoration: BoxDecoration(
+          //             color: Colors.transparent,
+          //             borderRadius: BorderRadius.circular(Adapt.px(33)),
+          //             border: Border.all(
+          //               width: Adapt.px(3),
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );
   }
 
   Widget buildHeadName() {
-    String nickName = YLUserInfoManager.sharedInstance.currentUserInfo?.nickName ?? "";
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          nickName,
+          widget.nickname ?? '',
           style: TextStyle(color: ThemeColor.titleColor, fontSize: 20),
         ),
         // Container(
@@ -713,49 +661,52 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
 
   Widget buildHeadAdditional() {
     return Padding(
-      padding: const EdgeInsets.only(top: 24.0),
+      padding: EdgeInsets.only(top: Adapt.px(24), left: Adapt.px(24), right: Adapt.px(24)),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildHeadAdditionalButton("Share", 135, 48, onTap: () {
-            showDialog(
-                context: context,
-                barrierDismissible: true,
-                builder: (BuildContext context) {
-                  return CommunityMyIdCardDialog();
-                });
-            // YLNavigator.pushPage(context, (context) => const UserCenterUploadAvatar());
-          },
-              linearGradient: LinearGradient(
-                colors: [
-                  ThemeColor.gradientMainEnd,
-                  ThemeColor.gradientMainStart,
-                ],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              )),
-          _buildHeadAdditionalButton("Edit Profile", 135, 48, onTap: () {
-            YLNavigator.pushPage(context, (context) => const AvatarPreviewPage()).then((value) {
-              setState(() {});
-            });
-            // YLNavigator.pushPage(context, (context) => SetUpPage());
-            // YLNavigator.pushPage(context, (context) => const UserCenterCreateAvatar());
-          }),
-          _buildHeadAdditionalButton("...", 48, 48, onTap: () {
-            YLNavigator.pushPage(context, (context) => const SetUpPage()).then((value) {
-              setState(() {});
-            });
-            // YLNavigator.pushPage(context, (context) => const UserCenterMagicAvatar());
-          })
+          _buildHeadAdditionalButton(
+            "Share",
+            (Adapt.screenW() - Adapt.px(48 + 20)) / 2,
+            48,
+            onTap: () {
+              showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (BuildContext context) {
+                    return CommunityMyIdCardDialog();
+                  });
+            },
+            linearGradient: LinearGradient(
+              colors: [
+                ThemeColor.gradientMainEnd,
+                ThemeColor.gradientMainStart,
+              ],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+          ),
+          SizedBox(width: Adapt.px(20),),
+          _buildHeadAdditionalButton(
+            "Edit Profile",
+            (Adapt.screenW() - Adapt.px(48 + 20)) / 2,
+            48,
+            onTap: () {
+              YLNavigator.pushPage(context, (context) => const AvatarPreviewPage()).then((value) {
+                setState(() {});
+              });
+            },
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildHeadAdditionalButton(String title, double width, double height, {required VoidCallback onTap, LinearGradient? linearGradient}) {
+  Widget _buildHeadAdditionalButton(String title, double width, double height,
+      {required VoidCallback onTap, LinearGradient? linearGradient}) {
     return GestureDetector(
       child: Container(
-        width: Adapt.px(width),
+        width: width,
         height: Adapt.px(height),
         alignment: Alignment.center,
         child: Text(
@@ -798,12 +749,17 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
       YLNavigator.pushPage(context, (context) => const UserCenterPlatformNFT());
     } else {
       if (_myGenerationAiStepsEntity!.canGenerateNFTAvatarCount == 0 ||
-          (_myGenerationAiStepsEntity!.generateAiImageFinishFlag && _myGenerationAiStepsEntity!.generateNFTAvatarFinishFlag)) {
+          (_myGenerationAiStepsEntity!.generateAiImageFinishFlag &&
+              _myGenerationAiStepsEntity!.generateNFTAvatarFinishFlag)) {
         YLNavigator.pushPage(context, (context) => const UserCenterPlatformNFT());
       } else {
-        if (_myGenerationAiStepsEntity!.generateAiImageFinishFlag && !_myGenerationAiStepsEntity!.generateNFTAvatarFinishFlag) {
+        if (_myGenerationAiStepsEntity!.generateAiImageFinishFlag &&
+            !_myGenerationAiStepsEntity!.generateNFTAvatarFinishFlag) {
           //还有购买NFT生成次数，并且AI已生成，NFT未生成的情况
-          YLNavigator.pushPage(context, (context) => NFTAvatarGenerateDonePage(myGenerationAiStepsEntity: _myGenerationAiStepsEntity));
+          YLNavigator.pushPage(
+              context,
+              (context) =>
+                  NFTAvatarGenerateDonePage(myGenerationAiStepsEntity: _myGenerationAiStepsEntity));
         } else {
           YLNavigator.pushPage(context, (context) => const UserCenterPlatformNFT());
         }
@@ -862,7 +818,14 @@ class _UserCenterPageState extends BasePageState<UserCenterPage>
 }
 
 class ImageTile extends StatelessWidget {
-  const ImageTile({Key? key, required this.index, required this.width, required this.height, required this.imgUrl, required this.item}) : super(key: key);
+  const ImageTile(
+      {Key? key,
+      required this.index,
+      required this.width,
+      required this.height,
+      required this.imgUrl,
+      required this.item})
+      : super(key: key);
 
   final int index;
   final int width;
@@ -919,24 +882,11 @@ class ImageTile extends StatelessWidget {
           //     value.extendedImageInfo!.image.width.toDouble(),
           //     value.extendedImageInfo!.image.height.toDouble());
         } else if (value.extendedImageLoadState == LoadState.failed) {
-          return Stack(
-            children: [
-              Container(
-                width: Adapt.px((xwidth - 32) / 2),
-                height: Adapt.px((xwidth - 32) / 2),
-                color: ThemeColor.color190,
-              ),
-              Align(
-                alignment: const Alignment(0, 0),
-                child: CommonImage(
-                  iconName: 'image_default_icon.png',
-                  width: Adapt.px(48),
-                  height: Adapt.px(48),
-                  fit: BoxFit.cover,
-                ),
-              )
-
-            ],
+          return Container(
+            width: Adapt.px((xwidth - 32) / 2),
+            height: Adapt.px((xwidth - 32) / 2),
+            color: ThemeColor.gray5,
+            child: const Icon(Icons.error_outline_outlined, color: Colors.red, size: 70),
           );
         }
         return null;

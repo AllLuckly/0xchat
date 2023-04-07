@@ -56,32 +56,6 @@ import UIKit
       }
       result(false)
     }
-    
-    ///初始化
-    @objc
-    public func initFlow(){
-        FCLWalletConnect.initFlow()
-        
-    }
-    
-    ///登录授权
-    @objc
-    public func authLogin(_ closure: @escaping (String) -> Void){
-        
-        FCLWalletConnect.authLogin { address in
-            closure(address)
-        }
-    }
-    
-    ///交易授权
-    @objc
-    public func authorizedTransactionsFCLWallet()-> String{
-        
-        return ""
-    }
-    
-    
-    
 //
 //    @objc
 //    public func connectWallet(schemaStr : String){

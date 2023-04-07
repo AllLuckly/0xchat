@@ -8,6 +8,7 @@ import 'package:yl_common/utils/theme_color.dart';
 import 'package:yl_common/utils/yl_userinfo_manager.dart';
 import 'package:yl_common/widgets/categoryView/yl_indicator.dart';
 import 'package:yl_common/widgets/common_appbar.dart';
+import 'package:yl_common/widgets/common_image.dart';
 import 'package:yl_localizable/yl_localizable.dart';
 import 'package:yl_usercenter/model/my_assets_entity.dart';
 import 'package:yl_usercenter/model/my_pregod_entity.dart';
@@ -71,29 +72,51 @@ class _NFTAvatarSettingsPageState extends State<NFTAvatarSettingsPage> with Sing
               backgroundColor: ThemeColor.bgColor,
               elevation: 0,
               titleSpacing: 0.0,//title widget两边不留间隙
-              title: Container(
-                  child:TabBar(
-                      controller: _tabController,
-                      tabs: [
-                          Tab(text: "Digital Collectibles"),
-                          Tab(text: "NFTs"),
-                      ],
-                      labelStyle: TextStyle(fontSize: 15,color: ThemeColor.titleColor, fontWeight: FontWeight.bold),
-                      unselectedLabelStyle: TextStyle(fontSize: 13,color: ThemeColor.gray3, fontWeight: FontWeight.bold),
-                      padding: EdgeInsets.only(right: 20),//60
-                      labelPadding: EdgeInsets.only(left: 0, right:10),//RIGHT 30
-                      indicator: RoundTabIndicator(
-                        borderSide: BorderSide(color: Colors.blue, width: 4),
-                        gradient: LinearGradient(colors: [
-                            Color(0xff44FF35),
-                            Color(0xff8792FF),
-                            Color(0xffA67EFF)
-                        ]),
-                        isRound: true,
-                        radius: 2,
-                        width: 28,
-                        insets: EdgeInsets.only(left: 0, right: 10)), //RIGHT 30
-                  ),
+              leading: IconButton(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                icon: CommonImage(
+                  iconName: "icon_back_left_arrow.png",
+                  width: Adapt.px(24),
+                  height: Adapt.px(24),
+                ),
+                onPressed: () {
+                      YLNavigator.pop(context);
+                    },
+              ),
+              title: Theme(
+                data: ThemeData(
+                  ///点击的高亮颜色
+                  highlightColor: Colors.transparent,
+                  ///水波纹颜色
+                  splashColor: Colors.transparent,
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  tabs: const [
+                    Tab(text: "Digital Collectibles"),
+                    Tab(text: "NFTs"),
+                  ],
+                  labelStyle: TextStyle(fontSize: 14, color: ThemeColor.titleColor, fontWeight: FontWeight.w600),
+                  unselectedLabelStyle:
+                  TextStyle(fontSize: 14, color: ThemeColor.color120, fontWeight: FontWeight.w400),
+                  padding: const EdgeInsets.only(right: 0),
+                  labelPadding: const EdgeInsets.only(left: 0, right: 10),
+                  indicator: RoundTabIndicator(
+                      borderSide: BorderSide(width: Adapt.px(6)),
+                      gradient: LinearGradient(
+                        colors: [
+                          ThemeColor.gradientMainEnd,
+                          ThemeColor.gradientMainStart,
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      isRound: true,
+                      radius: Adapt.px(6),
+                      width: Adapt.px(6),
+                      insets: const EdgeInsets.only(left: 0, right: 10)), //RIGHT 30
+                ),
               ),
           ),
           body: SafeArea(

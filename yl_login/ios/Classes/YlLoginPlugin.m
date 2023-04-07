@@ -5,22 +5,18 @@
 // Support project import fallback if the generated compatibility header
 // is not copied when this plugin is created as a library.
 // https://forums.swift.org/t/swift-static-libraries-dont-copy-generated-objective-c-header/19816
-#import "yl_login-Swift.h"
+//#import "yl_login-Swift.h"
 //#import "WalletConnect-Swift.h"
-//#import "FCLWalletConnect-Swift.h"
-
 #endif
 
 
 #import <Foundation/Foundation.h>
 #import <YYModel/YYModel.h>
-
 //#import <ReactiveObjC/ReactiveObjC.h>
 //#import "YLEThemeManager.h"
 //#import <ThemeManager/zhTheme.h>
 //#import "UIColor+Extension.h"
 //#import "YLECommonHintDialog.h"
-
 
 
 #define FlutterMethod(methodName)                         \
@@ -37,7 +33,7 @@ typedef void *(*fn)(id,SEL,id,FlutterResult);
 
 
 static FlutterMethodChannel *channel;
-static SwiftYlLoginPlugin *swiftInstance;
+//static SwiftYlLoginPlugin *swiftInstance;
 static NSString *address;
 
 @interface YlLoginPlugin()<
@@ -51,10 +47,10 @@ FlutterStreamHandler
 
 @implementation YlLoginPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-    [SwiftYlLoginPlugin registerWithRegistrar:registrar];
+//    [SwiftYlLoginPlugin registerWithRegistrar:registrar];
     YlLoginPlugin *instance = [[YlLoginPlugin alloc] init];
     
-    swiftInstance = [[SwiftYlLoginPlugin alloc] init];
+//    swiftInstance = [[SwiftYlLoginPlugin alloc] init];
 //    swiftInstance.delegate = instance;
     channel = [FlutterMethodChannel
                                      methodChannelWithName:@"yl_login"
@@ -113,35 +109,6 @@ FlutterMethod(connectWallet){
 //    };
     
 }
-
-
-FlutterMethod(initFlow){
-//    address = @"";
-//    NSDictionary *params = FlutterParams;
-   
-    [swiftInstance initFlow];
-    
-}
-
-FlutterMethod(authLogin){
-//    address = @"";
-//    NSDictionary *params = FlutterParams;
-    [swiftInstance authLogin:^(NSString * _Nonnull address) {
-        FlutterCallback(address);
-    }];
-    
-}
-
-FlutterMethod(authorizedTransactionsFCLWallet){
-//    address = @"";
-//    NSDictionary *params = FlutterParams;
-    NSString *authorized = [swiftInstance authorizedTransactionsFCLWallet];
-    FlutterCallback(authorized);
-}
-
-
-
-
 
 FlutterMethod(connectQrWallet){
     address = @"";

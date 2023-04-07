@@ -209,7 +209,7 @@ class _CreateAvatarStepThreeState extends State<CreateAvatarStepThree> {
                 ),
                 border: Border.all(color: ThemeColor.color180, width: 2),
                 gradient: LinearGradient(
-                    colors: [ThemeColor.purpleStart, ThemeColor.purpleEnd]),
+                    colors: [ThemeColor.gradientMainStart, ThemeColor.gradientMainEnd]),
               ),
               child: Text(
                 'Creat NFT Avatar',
@@ -345,8 +345,8 @@ class _CreateAvatarStepThreeState extends State<CreateAvatarStepThree> {
                                 fontSize: 12,
                                 color: ThemeColor.titleColor),
                             colors: [
-                              ThemeColor.purpleStart,
-                              ThemeColor.purpleEnd
+                              ThemeColor.gradientMainStart,
+                              ThemeColor.gradientMainEnd
                             ]),
                         onTap: () async {// 恢复购买
                           await InAppPurchase.instance.restorePurchases();
@@ -640,7 +640,7 @@ class _CreateAvatarStepThreeState extends State<CreateAvatarStepThree> {
           radius: Adapt.px(16),
           gradient: SweepGradient(
               colors: index == seletIndex
-                  ? [ThemeColor.purpleStart, ThemeColor.purpleEnd]
+                  ? [ThemeColor.gradientMainStart, ThemeColor.gradientMainEnd]
                   : [Colors.transparent, Colors.transparent]),
           child: Container(
             margin: EdgeInsets.all(Adapt.px(2)),
@@ -672,8 +672,8 @@ class _CreateAvatarStepThreeState extends State<CreateAvatarStepThree> {
                                   color: ThemeColor.titleColor),
                               colors: index == seletIndex
                                   ? [
-                                      ThemeColor.purpleStart,
-                                      ThemeColor.purpleEnd
+                                      ThemeColor.gradientMainStart,
+                                      ThemeColor.gradientMainEnd
                                     ]
                                   : [ThemeColor.color0, ThemeColor.color0]),
                         ),
@@ -693,8 +693,8 @@ class _CreateAvatarStepThreeState extends State<CreateAvatarStepThree> {
                                   border: Border.all(
                                       color: ThemeColor.color180, width: 2),
                                   gradient: LinearGradient(colors: [
-                                    ThemeColor.purpleStart,
-                                    ThemeColor.purpleEnd
+                                    ThemeColor.gradientMainStart,
+                                    ThemeColor.gradientMainEnd
                                   ]),
                                 ),
                                 child: Text(
@@ -720,7 +720,7 @@ class _CreateAvatarStepThreeState extends State<CreateAvatarStepThree> {
                               fontSize: 12,
                               color: ThemeColor.color100),
                           colors: index == seletIndex
-                              ? [ThemeColor.purpleStart, ThemeColor.purpleEnd]
+                              ? [ThemeColor.gradientMainStart, ThemeColor.gradientMainEnd]
                               : [ThemeColor.color100, ThemeColor.color100]),
                     ),
                   ],
@@ -734,7 +734,7 @@ class _CreateAvatarStepThreeState extends State<CreateAvatarStepThree> {
                           fontSize: 18,
                           color: ThemeColor.titleColor),
                       colors: index == seletIndex
-                          ? [ThemeColor.purpleStart, ThemeColor.purpleEnd]
+                          ? [ThemeColor.gradientMainStart, ThemeColor.gradientMainEnd]
                           : [ThemeColor.color0, ThemeColor.color0]),
                 ),
                 SizedBox(

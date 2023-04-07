@@ -12,7 +12,6 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
-import kotlinx.coroutines.CoroutineScope
 
 /** YlLoginPlugin */
 class YlLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -30,21 +29,7 @@ class YlLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-    if (call.method == "initFlow"){
-//      Log.e("Michael", "初始化Flow");
-      FlowManager.getInstance()?.initFlow()
-    } else if (call.method == "authLogin"){//Flow注册登录
-      FlowManager.getInstance()?.authLogin(object : AuthLoginListener {
-
-        override fun onResult(s: String?) {
-//          Log.e("Michael", "address = "+s)
-          if(s != null) {
-            result.success(s);
-          }
-        }
-
-      })
-    } else if (call.method == "initWalletConnect"){
+    if (call.method == "initWalletConnect"){
       WalletConnectManager.get().initWalletConnectAll(mContext)
     } else if (call.method == "connectWallet"){
       var scheme: String? = null

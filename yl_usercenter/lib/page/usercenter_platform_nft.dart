@@ -6,6 +6,7 @@ import 'package:yl_common/utils/theme_color.dart';
 import 'package:yl_common/utils/yl_userinfo_manager.dart';
 import 'package:yl_common/widgets/base_page_state.dart';
 import 'package:yl_common/widgets/common_appbar.dart';
+import 'package:yl_common/widgets/common_image.dart';
 import 'package:yl_usercenter/model/my_oxchat_nft_entity.dart';
 import 'package:yl_usercenter/page/usercenter_chose_pic_tip.dart';
 import 'package:yl_usercenter/uitls/choose_image_upload.dart';
@@ -119,8 +120,8 @@ class _UserCenterPlatformNFTState extends BasePageState<UserCenterPlatformNFT> {
                 child: CachedNetworkImage(
                   imageUrl: avatarName,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => assetIcon('icon_eg_1.png', Adapt.px(163), Adapt.px(163)),
-                  errorWidget: (context, url, error) => assetIcon('icon_eg_1.png', Adapt.px(163), Adapt.px(163)),
+                  placeholder: (context, url) => _placeholderWidget(),
+                  errorWidget: (context, url, error) => _placeholderWidget(),
                   width: Adapt.px(163),
                   height: Adapt.px(163),
                 ),
@@ -136,6 +137,30 @@ class _UserCenterPlatformNFTState extends BasePageState<UserCenterPlatformNFT> {
 
 
       ],
+    );
+  }
+
+  Widget _placeholderWidget(){
+    return Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(Adapt.px(24))),
+              color: ThemeColor.color190,
+          )
+          ),
+          Align(
+            alignment: const Alignment(0, 0),
+            child: CommonImage(
+              iconName: 'image_default_icon.png',
+              width: Adapt.px(48),
+              height: Adapt.px(48),
+              fit: BoxFit.cover,
+            ),
+          )
+        ],
     );
   }
 

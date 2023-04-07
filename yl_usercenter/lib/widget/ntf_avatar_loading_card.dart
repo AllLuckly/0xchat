@@ -77,7 +77,7 @@ class _NTFAvatarLoadingCardState extends State<NTFAvatarLoadingCard> {
                     width: Adapt.px(18),
                     height: Adapt.px(18),
                     child: CircularProgressIndicator(
-                      color: ThemeColor.purpleStart,
+                      color: ThemeColor.gradientMainStart,
                       backgroundColor: ThemeColor.white01,
                       strokeWidth: Adapt.px(1),
                     ),
@@ -87,7 +87,7 @@ class _NTFAvatarLoadingCardState extends State<NTFAvatarLoadingCard> {
                     height: Adapt.px(22.5),
                     decoration: BoxDecoration(
                       border:
-                          Border.all(color: ThemeColor.purpleStart, width: 1),
+                          Border.all(color: ThemeColor.gradientMainStart, width: 1),
                       borderRadius: BorderRadius.circular(
                         Adapt.px(11.25),
                       ),
@@ -96,7 +96,7 @@ class _NTFAvatarLoadingCardState extends State<NTFAvatarLoadingCard> {
                       value: true,
                       onChanged: (value) {},
                       activeColor: ThemeColor.color180,
-                      checkColor: ThemeColor.purpleStart,
+                      checkColor: ThemeColor.gradientMainStart,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
                           Adapt.px(11.25),

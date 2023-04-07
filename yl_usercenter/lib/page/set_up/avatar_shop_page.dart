@@ -84,7 +84,7 @@ class _AvatarShopPageState extends State<AvatarShopPage> with SingleTickerProvid
         title: Localized.text('yl_usercenter.NFT Purchase'),
         useLargeTitle: false,
         centerTitle: true,
-        canBack: false,
+        canBack: true,
       ),
       body: buildBoby(),
     );

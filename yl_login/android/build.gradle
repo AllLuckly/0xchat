@@ -2,8 +2,30 @@ group 'com.yl.yl_login'
 version '1.0-SNAPSHOT'
 
 buildscript {
+    ext {
+        versions = [
+          kotlin                      : "1.6.10",
+          moshi                       : '1.8.0',
+          okhttp                      : '3.11.0',
+          jupiter                     : '5.7.0',
+          'androidPlugin'             : '7.0.4',
 
+
+          androidx_app_compat         : "1.0.2",
+
+
+          multidex                    : "2.0.1"
+        ]
+
+        ext.deps = [
+          android: [
+            'runtime'     : 'com.google.android:android:4.1.1.4',
+            'gradlePlugin': "com.android.tools.build:gradle:${versions.androidPlugin}",
+          ]
+        ]
+    }
     repositories {
+        gradlePluginPortal()
         mavenCentral()
         maven { url 'https://jitpack.io' }
         google()
@@ -13,7 +35,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.4'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.38.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
     }
 }
 
@@ -42,19 +64,17 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.10"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
 
     implementation "org.java-websocket:Java-WebSocket:1.4.0"
     implementation "com.github.komputing:khex:1.0.0-RC6"
-    implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation "androidx.appcompat:appcompat:$versions.androidx_app_compat"
 
-    implementation "androidx.multidex:multidex:2.0.1"
-    implementation "com.squareup.moshi:moshi:1.8.0"
-    implementation "com.squareup.okhttp3:okhttp:3.11.0"
+    implementation "androidx.multidex:multidex:$versions.multidex"
+    implementation "com.squareup.moshi:moshi:$versions.moshi"
+    implementation "com.squareup.okhttp3:okhttp:$versions.okhttp"
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0'
     implementation 'com.github.WalletConnect:kotlin-walletconnect-lib:0.9.6'
-
-    implementation 'com.github.Outblock:fcl-android:0.09'
 }

@@ -7,38 +7,30 @@ import 'package:yl_common/log_util.dart';
 import 'package:yl_common/navigator/navigator.dart';
 import 'package:yl_common/utils/adapt.dart';
 import 'package:yl_common/utils/yl_userinfo_manager.dart';
+import 'package:yl_common/widgets/common_status_view.dart';
 import 'package:yl_common/widgets/common_webview.dart';
 import 'package:yl_common/yl_common.dart';
 import 'package:yl_common/utils/theme_color.dart';
 import 'package:yl_common/widgets/common_glassmorphic_container.dart';
 import 'package:yl_module_service/yl_module_service.dart';
+import 'package:yl_usercenter/model/DynamicSubmodulePageType.dart';
 import 'package:yl_usercenter/model/my_assets_entity.dart';
-import 'package:yl_usercenter/model/my_flow_nft_entity.dart';
 import 'package:yl_usercenter/model/my_mainnet_entity.dart';
 import 'package:yl_usercenter/model/my_pregod_entity.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:yl_usercenter/page/usercenter_nft_details_page.dart';
 import 'package:yl_usercenter/page/usercenter_page.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:keframe/keframe.dart';
 
-enum DynamicSubmodulePageType {
-  allType,
-  tradeType,
-  donateType,
-  nftType,
-  articleType,
-  maticType,
-  flowType
-}
 
 class UsercenterDynamicSubmodulePage extends StatefulWidget {
   DynamicSubmodulePageType? pageType;
   List<OwnedNfts> showOwnedNfts = [];
   List<OwnedNfts> showPreGodList = [];
-  List<MyFlowNftEntity> flowList = [];
 
-  UsercenterDynamicSubmodulePage({Key? key, this.pageType, required this.showOwnedNfts, required this.showPreGodList,  required this.flowList}) : super(key: key);
+  UsercenterDynamicSubmodulePage({Key? key, this.pageType, required this.showOwnedNfts, required this.showPreGodList}) : super(key: key);
 
   @override
   State<UsercenterDynamicSubmodulePage> createState() =>
@@ -143,21 +135,21 @@ class _UsercenterDynamicSubmodulePageState
   }
 
   Widget buildBoby() {
-      LogUtil.e("pageType : ${pageType}");
     if (pageType == DynamicSubmodulePageType.maticType) {
-      return widget.showOwnedNfts.length == 0
+      return widget.showPreGodList.length == 0
           ? Container(
-              color: ThemeColor.bgColor,
+              color: ThemeColor.color200,
+              child: CommonStatusView(pageStatus: PageStatus.noData)
             )
           : Container(
-              color: ThemeColor.bgColor,
+              color: ThemeColor.color200,
               child: SizeCacheWidget(
                 child: WaterfallFlow.builder(
                   //cacheExtent: 0.0,
                   //reverse: true,
                   addAutomaticKeepAlives: false,
                   addRepaintBoundaries: false,
-                  padding: const EdgeInsets.all(5.0),
+                  padding: EdgeInsets.fromLTRB(Adapt.px(5), Adapt.px(5), Adapt.px(5), Adapt.px(100)),
                   gridDelegate:
                       const SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
@@ -171,20 +163,20 @@ class _UsercenterDynamicSubmodulePageState
                     // },
                   ),
                   itemBuilder: (BuildContext c, int index) {
-                    bool? isIpfs = widget.showOwnedNfts[index]
+                    bool? isIpfs = widget.showPreGodList[index]
                         .metadata
                         ?.image
                         ?.contains("ipfs://");
                     // bool isHttp = json['image']!.contains("http");
                     String? imageUrl = '';
                     if (isIpfs == true) {
-                      imageUrl = widget.showOwnedNfts[index]
+                      imageUrl = widget.showPreGodList[index]
                           .metadata
                           ?.image
                           ?.replaceAll(
                               "ipfs://", "https://infura-ipfs.io/ipfs/");
                     } else {
-                      imageUrl = widget.showOwnedNfts[index].metadata?.image;
+                      imageUrl = widget.showPreGodList[index].metadata?.image;
                     }
                     return FrameSeparateWidget(
                         child: InkWell(
@@ -193,111 +185,37 @@ class _UsercenterDynamicSubmodulePageState
                                 width: 100,
                                 height: 130,
                                 imgUrl: imageUrl ?? '',
-                                item: widget.showOwnedNfts[index],
+                                item: widget.showPreGodList[index],
                             ),
                             onTap: () async {
                                 //点击详情
                                 YLNavigator.pushPage(
                                     context,
-                                      (context) => CommonWebView(
-                                        widget.showOwnedNfts[index].tokenUri?.gateway ?? '',
-                                        title: 'ETH Details',
-                                    ),
+                                      (context) => UserCenterNftDetailsPage(ownedNfts: widget.showPreGodList[index], imgUrl: imageUrl),
                                 );
                             },
                         ),
                     );
                   },
                   //itemCount: 19,
-                  itemCount: widget.showOwnedNfts.length,
+                  itemCount: widget.showPreGodList.length,
                 ),
               ));
-    }else if(pageType == DynamicSubmodulePageType.flowType){
-        LogUtil.e("message????????? ${widget.flowList}");
-        return widget.flowList.length == 0
-          ? Container(
-            color: ThemeColor.bgColor,
-        )
-          : Container(
-          color: ThemeColor.bgColor,
-          child: SizeCacheWidget(
-              child: WaterfallFlow.builder(
-                  //cacheExtent: 0.0,
-                  //reverse: true,
-                  addAutomaticKeepAlives: false,
-                  addRepaintBoundaries: false,
-                  padding: const EdgeInsets.all(5.0),
-                  gridDelegate:
-                  const SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 18,
-                      mainAxisSpacing: 16,
-                      // collectGarbage: (List<int> garbages) {
-                      //   print('collect garbage : $garbages');
-                      // },
-                      // viewportBuilder: (int firstIndex, int lastIndex) {
-                      //   print('viewport : [$firstIndex,$lastIndex]');
-                      // },
-                  ),
-                  itemBuilder: (BuildContext c, int index) {
-                      // bool? isIpfs = widget.showPreGodList[index]
-                      //   .metadata
-                      //   ?.image
-                      //   ?.contains("ipfs://");
-                      // bool isHttp = json['image']!.contains("http");
-                      String? imageUrl = '';
-                      // if (isIpfs == true) {
-                      //     imageUrl = widget.showPreGodList[index]
-                      //       .metadata
-                      //       ?.image
-                      //       ?.replaceAll("ipfs://", "https://infura-ipfs.io/ipfs/");
-                      // } else {
-                      //     imageUrl = widget.flowList[index].uri;
-                      // }
-                      imageUrl = widget.flowList[index].image;
-
-                      return FrameSeparateWidget(
-                          child: InkWell(
-                              child: ImageTile(
-                                  index: index,
-                                  width: 100,
-                                  height: 130,
-                                  imgUrl: imageUrl,
-                                  item: OwnedNfts(),
-                              ),
-                              onTap: () async {
-                                  //后台没返回详情
-                                  return;
-                                  //点击进入详情
-                                  YLNavigator.pushPage(
-                                      context,
-                                        (context) => CommonWebView(
-                                          widget.flowList[index].image,
-                                          title: 'ETH Details',
-                                      ),
-                                  );
-                              },
-                          ),
-                      );
-                  },
-                  //itemCount: 19,
-                  itemCount: widget.flowList.length,
-              ),
-          ));
     }
     return widget.showPreGodList.length == 0
         ? Container(
-            color: ThemeColor.bgColor,
+            color: ThemeColor.color200,
+            child: CommonStatusView(pageStatus: PageStatus.noData)
           )
         : Container(
-            color: ThemeColor.bgColor,
+            color: ThemeColor.color200,
             child: SizeCacheWidget(
               child: WaterfallFlow.builder(
                 //cacheExtent: 0.0,
                 //reverse: true,
                 addAutomaticKeepAlives: false,
                 addRepaintBoundaries: false,
-                padding: const EdgeInsets.all(5.0),
+                padding: EdgeInsets.fromLTRB(Adapt.px(5), Adapt.px(5), Adapt.px(5), Adapt.px(100)),
                 gridDelegate:
                     const SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
@@ -339,10 +257,7 @@ class _UsercenterDynamicSubmodulePageState
                               //点击进入详情
                               YLNavigator.pushPage(
                                   context,
-                                    (context) => CommonWebView(
-                                      widget.showPreGodList[index].tokenUri?.gateway ?? '',
-                                      title: 'ETH Details',
-                                  ),
+                                    (context) =>  UserCenterNftDetailsPage(ownedNfts: widget.showPreGodList[index], imgUrl: imageUrl,),
                               );
                           },
                       ),
@@ -452,11 +367,11 @@ class _UsercenterDynamicSubmodulePageState
 // Widget buildBoby(){
 //   return showPreGodList == null
 //       ? Container(
-//           color: ThemeColor.bgColor,
+//           color: ThemeColor.color200,
 //         )
 //       : Container(
 //           padding: EdgeInsets.only(top: Adapt.px(10)),
-//           color: ThemeColor.bgColor,
+//           color: ThemeColor.color200,
 //           child: ListView.builder(
 //               physics: NeverScrollableScrollPhysics(),
 //               shrinkWrap: true,

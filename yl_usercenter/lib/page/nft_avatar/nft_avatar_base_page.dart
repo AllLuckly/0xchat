@@ -124,21 +124,6 @@ class NFTAvatarBasePageState<T extends NFTAvatarBasePage> extends State<T>
     return SafeArea(
       child: Column(
         children: [
-          // NoticeButton(
-          //   title: "Notify me when done",
-          //   gradient: LinearGradient(
-          //     colors: [
-          //       ThemeColor.purpleEnd,
-          //       ThemeColor.purpleStart,
-          //     ],
-          //     begin: Alignment.centerLeft,
-          //     end: Alignment.centerRight,
-          //   ),
-          //   onTap: onConfirm,
-          // ),
-          // SizedBox(
-          //   height: Adapt.px(20),
-          // ),
           NoticeButton(
             title: title,
             backgroundColor: ThemeColor.color180,

@@ -53,8 +53,8 @@ class _NFTAvatarCreatePageState extends NFTAvatarBasePageState {
   buildCreateProgress() {
     return CustomCircularProgressIndicator(
       valueColor: ColorTween(
-        begin: ThemeColor.purpleStart,
-        end: ThemeColor.purpleEnd,
+        begin: ThemeColor.gradientMainStart,
+        end: ThemeColor.gradientMainEnd,
       ).animate(animationController),
       width: Adapt.px(240),
       strokeWidth: Adapt.px(6),

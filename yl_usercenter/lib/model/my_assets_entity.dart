@@ -54,7 +54,7 @@ MyAssetsEntity copyWith({  String? next,
 /// 账户信息接口
 Future<MyAssetsEntity?> getMyAssets({BuildContext? context, params}) async {
   final map = <String, dynamic>{};
-  map['X-API-KEY'] = 'a34f499e3db94c2ebaea8b1ba53fc721';
+  map['X-API-KEY'] = '';
   return YLNetwork.instance.doRequest(
     context,
     url: 'https://api.opensea.io/api/v1/assets?order_direction=desc&limit=50&include_orders=false&owner=0xC8b960D09C0078c18Dcbe7eB9AB9d816BcCa8944',

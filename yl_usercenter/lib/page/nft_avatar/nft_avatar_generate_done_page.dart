@@ -133,8 +133,8 @@ class _NFTAvatarGenerateDonePageState extends State<NFTAvatarGenerateDonePage>
                         strokeWidth: Adapt.px(3),
                         value: 1,
                         valueColor: ColorTween(
-                          begin: ThemeColor.purpleStart,
-                          end: ThemeColor.purpleEnd,
+                          begin: ThemeColor.gradientMainStart,
+                          end: ThemeColor.gradientMainEnd,
                         ).animate(_animationController),
                       ),
                     ),
@@ -266,8 +266,8 @@ class _NFTAvatarGenerateDonePageState extends State<NFTAvatarGenerateDonePage>
                       borderSide: BorderSide(width: Adapt.px(6)),
                       gradient: LinearGradient(
                         colors: [
-                          ThemeColor.purpleEnd,
-                          ThemeColor.purpleStart,
+                          ThemeColor.gradientMainEnd,
+                          ThemeColor.gradientMainStart,
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -314,8 +314,8 @@ class _NFTAvatarGenerateDonePageState extends State<NFTAvatarGenerateDonePage>
                 horizontalPadding: Adapt.px(24),
                 gradient: LinearGradient(
                   colors: [
-                    ThemeColor.purpleEnd,
-                    ThemeColor.purpleStart,
+                    ThemeColor.gradientMainEnd,
+                    ThemeColor.gradientMainStart,
                   ],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,

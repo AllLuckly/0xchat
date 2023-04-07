@@ -52,7 +52,7 @@ class _AvatarPreviewPageState extends State<AvatarPreviewPage> {
         title: Localized.text('yl_usercenter.Profile picture'),
         useLargeTitle: false,
         centerTitle: true,
-        canBack: false,
+        canBack: true,
         actions: <Widget>[
           Container(
             margin: EdgeInsets.only(right: Adapt.px(5), top: Adapt.px(12)),
@@ -144,8 +144,8 @@ class _AvatarPreviewPageState extends State<AvatarPreviewPage> {
                     return placeholderImage;
                   })
               : PhotoView(
-                  imageProvider: NetworkImage(
-                    '${mCurrentUserInfo?.headUrl}',
+                  imageProvider: CachedNetworkImageProvider(
+                      '${mCurrentUserInfo?.headUrl}'
                   ),
                   errorBuilder: (_, __, ___) {
                     return placeholderImage;

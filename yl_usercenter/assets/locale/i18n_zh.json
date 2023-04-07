@@ -109,10 +109,12 @@
   "DETAILS" : "详情",
   "mints_after_purchase": "购买后铸造",
   "view_on_explorer" : "资源管理器上查看",
-  "view_on_ipfs": "IPFS上查看",
+  "view_on_ipfs": "Opensea上查看",
   "ipfs_metadata" : "IPFS 元数据",
   "ABOUT_THE_CREATOR": "关于创作者",
   "buy_now": "立即购买",
   "bv_buvina_vou_aaree_to_our": "我们将为您的工作提供帮助",
-  "previews_terms": "条款"
+  "previews_terms": "条款",
+  "Logout": "退出登陆",
+  "动态": "动态"
 }
